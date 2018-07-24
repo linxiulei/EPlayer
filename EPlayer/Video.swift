@@ -32,6 +32,9 @@ let AUDIO_FMT_CONVERT_TO = AV_SAMPLE_FMT_S16
 //let FMT_CONVERT_TO = AV_PIX_FMT_YUYV422
 //let CVPIX_FMT = kCVPixelFormatType_422YpCbCr8_yuvs
 //
+
+let MAX_SUBTITLES = 10
+
 enum PlayStatus {
     case started
     case playing
@@ -327,27 +330,45 @@ class Video {
     }
     
     func downloadSubtitles(closure: @escaping () -> Void) {
-        var subtitleID = 0
+        var subtitleID = ["chi": 0,
+                          "eng": 0]
         createSubtitleDirectory()
         
         subtitleManager.initLibass(width, height)
-        /*
-        XLAPI().downloadSubtitles(filepath, "eng") { (_ subinfo: Subinfo) in
-            self.subtitleDownloadCallback(subinfo, "\(subtitleID)")
-            subtitleID += 1
+        
+        for lang in subtitleID.keys {
+            OpenSubtitlesAPI().downloadSubtitles(filepath, lang) { (_ subinfo: Subinfo) in
+                if (subtitleID[lang]! > MAX_SUBTITLES) {
+                    return
+                }
+                self.subtitleDownloadCallback(subinfo, "\(subtitleID[lang]!)")
+                subtitleID[lang]! += 1
+                closure()
+            }
         }
 
-        ShooterAPI().downloadSubtitles(filepath, "eng") { (_ subinfo: Subinfo) in
-            self.subtitleDownloadCallback(subinfo, "\(subtitleID)")
-            subtitleID += 1
+        for lang in ["chi"] {
+            XLAPI().downloadSubtitles(filepath, lang) { (_ subinfo: Subinfo) in
+                if (subtitleID[lang]! > MAX_SUBTITLES) {
+                    return
+                }
+                self.subtitleDownloadCallback(subinfo, "\(subtitleID[lang]!)")
+                subtitleID[lang]! += 1
+                closure()
+            }
         }
-        */
         
-        OpenSubtitlesAPI().downloadSubtitles(filepath, "eng") { (_ subinfo: Subinfo) in
+        /*
+        ShooterAPI().downloadSubtitles(filepath, "eng") { (_ subinfo: Subinfo) in
+            if (subtitleID > MAX_SUBTITLES) {
+                return
+            }
             self.subtitleDownloadCallback(subinfo, "\(subtitleID)")
             subtitleID += 1
             closure()
         }
+         */
+
     }
     
     func subtitleDownloadCallback(_ subinfo: Subinfo, _ suffix: String) {

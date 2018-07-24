@@ -77,13 +77,13 @@ class OpenSubtitlesAPI: DownloaderAPI {
     }
     
     
-    func logIn(_ mg: MovieGuesser, closure: @escaping (_ subinfo: Subinfo) -> Void) {
+    func logIn(_ mg: MovieGuesser, _ lang: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
         let params: [Any] = ["", "", "en", "TemporaryUserAgent"]
         AlamofireXMLRPC.request(apiURL, methodName: "LogIn", parameters: params).responseXMLRPC { (response: DataResponse<XMLRPCNode>) -> Void in
             switch response.result {
                 case .success(let value):
                     let token = value[0]["token"].string
-                    self.searchSubtitles(mg, token!, closure: closure)
+                    self.searchSubtitles(mg, token!, lang, closure: closure)
                 case .failure:
                     print("failure")
             }
@@ -91,12 +91,12 @@ class OpenSubtitlesAPI: DownloaderAPI {
         }
     }
     
-    func searchSubtitles(_ mg: MovieGuesser, _ token: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
+    func searchSubtitles(_ mg: MovieGuesser, _ token: String, _ lang: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
         var query: [String: Any]
         if (mg.episode != nil) {
-            query = ["query": mg.movieName, "season": mg.season!, "episode": mg.episode!, "sublanguageid": "eng"]
+            query = ["query": mg.movieName, "season": mg.season!, "episode": mg.episode!, "sublanguageid": lang]
         } else {
-            query = ["query": mg.movieName, "sublanguageid": "eng"]
+            query = ["query": mg.movieName, "sublanguageid": lang]
         }
         let params: [Any] = [
             token,
@@ -110,13 +110,13 @@ class OpenSubtitlesAPI: DownloaderAPI {
                     return
                 }
                 let num = subtitleList.count
-                os_log("%d subtitles found in Opensubtitles", type: .info, num)
+                os_log("%d subtitles of %s found in Opensubtitles", type: .info, num, lang)
                 
                 var subinfoList = [Subinfo]()
                 for subtitle in subtitleList {
                     let link = subtitle["SubDownloadLink"].string
                     let ext = subtitle["SubFormat"].string
-                    let lang = "eng"
+                    let lang = lang
                     let subinfo = OpenSubtitleSubinfo(link!, ext!, lang: lang)
                     subinfoList.append(subinfo)
                 }
@@ -141,6 +141,6 @@ class OpenSubtitlesAPI: DownloaderAPI {
             os_log("couldn't guess the movie info of %@", type: .info, filename)
             return
         }
-        logIn(mg, closure: closure)
+        logIn(mg, lang, closure: closure)
     }
 }
