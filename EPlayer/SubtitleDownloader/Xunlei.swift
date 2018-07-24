@@ -10,6 +10,12 @@ import os
 import os.log
 import Foundation
 
+let mapping = [
+    "简体": "chi",
+    "繁体": "chi",
+    "英语": "eng",
+]
+
 class XLSubinfo: Subinfo {
     var xlSub: XLSubStruct
     init? (_ s: XLSubStruct) {
@@ -28,7 +34,14 @@ class XLSubinfo: Subinfo {
     
     override var langs: [String] {
         get {
-            return xlSub.language!.split(separator: "&").map(String.init)
+            var l: [String] = []
+            for lang_string in xlSub.language!.split(separator: "&").map(String.init) {
+                guard let mapping_lang = mapping[lang_string] else {
+                    continue
+                }
+                l.append(mapping_lang)
+            }
+            return l
         }
     }
     
@@ -75,14 +88,17 @@ class XLAPI: DownloaderAPI {
         guard let url = URL(string: urlString) else { return }
         
         var ret: [Subinfo?] = []
+        print(url)
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if error != nil {
                 print("Xunlei: \(error!.localizedDescription)")
             }
             
             guard let data = data else { return }
+            
+            let ndata = processMalformedUTF8(data)
             do {
-                let result = try JSONDecoder().decode(XLResult.self, from: data)
+                let result = try JSONDecoder().decode(XLResult.self, from: ndata)
                 for xl in result.sublist {
                     ret.append(XLSubinfo(xl))
                 }
@@ -91,10 +107,12 @@ class XLAPI: DownloaderAPI {
                     guard let sub = sub else {
                         continue
                     }
-                    sub.download(closure: closure)
+                    if sub.langs.contains(lang) {
+                        sub.download(closure: closure)
+                    }
                 }
             } catch let jsonError {
-                let dataStr = String(data: data, encoding: String.Encoding.ascii)
+                let dataStr = String(data: ndata, encoding: .utf8)
                 print("Xunlei: \(jsonError) \(dataStr)")
             }
         }.resume()

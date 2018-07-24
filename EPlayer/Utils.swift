@@ -285,6 +285,16 @@ func getEncoding(_ cfStringEncoding: CFStringEncodings) -> String.Encoding {
     return encoding
 }
 
+func processMalformedUTF8(_ data: Data) -> Data {
+    var data = data
+    data.append(0)
+    let s = data.withUnsafeBytes { (p: UnsafePointer<CChar>) in String(cString: p) }
+    let clean = s.replacingOccurrences(of: "\u{FFFD}", with: "")
+    
+    let d = clean.data(using: String.Encoding.utf8)
+    return d!
+}
+
 extension String.Encoding {
     static let GB18030 = getEncoding(CFStringEncodings.GB_18030_2000)
     static let BIG5 = getEncoding(CFStringEncodings.big5_HKSCS_1999)
