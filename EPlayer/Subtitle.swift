@@ -148,7 +148,7 @@ class SubtitleStream {
         }
     }
     
-    init (_ name: String, _ filepath: String, _ assLibrary: AssLibrary, _ assRenderer: AssRenderer, dict: EPDictionary?) {
+    init? (_ name: String, _ filepath: String, _ assLibrary: AssLibrary, _ assRenderer: AssRenderer, dict: EPDictionary?) {
         subtitleName = name
         self.assLibrary = assLibrary
         self.assRenderer = assRenderer
@@ -156,10 +156,11 @@ class SubtitleStream {
             assTrack = ass_read_file(assLibrary, UnsafeMutablePointer(mutating: s), nil)
         }
         
+        guard let assTrack = assTrack else { return nil }
         mdict = dict
         
-        for i in 0..<assTrack!.pointee.n_events {
-            let event = assTrack!.pointee.events[Int(i)]
+        for i in 0..<assTrack.pointee.n_events {
+            let event = assTrack.pointee.events[Int(i)]
             let pts = event.Start
             let duration = event.Duration
             let rawAssText = String.init(cString: event.Text)
