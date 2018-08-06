@@ -233,11 +233,8 @@ class Video {
         
         subtitleManager.mdict = mdict
         
-        ret = sDecInit()
-        if isErr(ret, "sDecInit") {
-            return nil
-        }
-        
+        // Don't need to deal the situation of no subtitles
+        _ = sDecInit()
 
         b = Date().timeIntervalSince1970
         os_log("subtitle decode init uses %f", type: .debug, b - a)
