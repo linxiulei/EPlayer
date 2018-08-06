@@ -311,13 +311,19 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
         os_log("creating layer uses %f", type: .debug,  b - a)
         
         a = Date().timeIntervalSince1970
-        video = Video(path: movieFile.path,
+        guard let video = Video(path: movieFile.path,
             view: movieView,
             sView: subtitleView,
             pView: paraLabel,
             dict: epdict,
             alayer: layer!
-        )
+            ) else {
+                self.notify("Failed to open video")
+                self.performSegue(withIdentifier: "unwindSegueToFileTable", sender: self)
+                return
+        }
+        
+        self.video = video
         // process files
         
         if (progress > 0) {

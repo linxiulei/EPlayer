@@ -160,7 +160,7 @@ class Video {
         var usingHWAccel = true
     #endif
     var videoIsEOF = false
-    init(path: String, view: UIImageView, sView: UILabel, pView: UILabel, dict: EPDictionary?, alayer: AVSampleBufferDisplayLayer) {
+    init?(path: String, view: UIImageView, sView: UILabel, pView: UILabel, dict: EPDictionary?, alayer: AVSampleBufferDisplayLayer) {
         let a = Date().timeIntervalSince1970
         mdict = dict
         displayView = view
@@ -200,7 +200,7 @@ class Video {
         os_log("Video open file %@", type: .info, path)
         var ret: Int32 = avformat_open_input(&pFormatCtx, path, nil, nil)
         if isErr(ret, "avformat_open_input") {
-            return
+            return nil
         }
         var b = Date().timeIntervalSince1970
         os_log("open input uses %f", type: .debug, b - a)
@@ -208,7 +208,7 @@ class Video {
 
         ret = avformat_find_stream_info(pFormatCtx, nil)
         if isErr(ret, "avformat_find_stream_info") {
-            return
+            return nil
         }
         duration = pFormatCtx!.pointee.duration / 1000
         b = Date().timeIntervalSince1970
@@ -219,14 +219,14 @@ class Video {
         os_log("dump format uses %f", type: .debug, b - a)
         ret = vDecInit()
         if isErr(ret, "vDecInit") {
-            return
+            return nil
         }
         b = Date().timeIntervalSince1970
         os_log("video decode init uses %f", type: .debug, b - a)
         
         ret = aDecInit()
         if isErr(ret, "aDecInit") {
-            return
+            return nil
         }
         b = Date().timeIntervalSince1970
         os_log("audio decode init uses %f", type: .debug, b - a)
@@ -235,6 +235,7 @@ class Video {
         
         ret = sDecInit()
         if isErr(ret, "sDecInit") {
+            return nil
         }
         
 
@@ -267,11 +268,12 @@ class Video {
         
         if (swrCtx == nil) {
             os_log("failed to alloc swr", type: .error)
+            return nil
         }
         
         ret = swr_init(swrCtx)
         if isErr(ret, "swrCtx init") {
-            return
+            return nil
         }
         
         layer.requestMediaDataWhenReady(on: DispatchQueue(label: "layer"), using: { () -> Void in

@@ -101,7 +101,7 @@ class FileListViewController: UITableViewController {
         let sourceController = sender.source as! MovieViewController
         sourceController.updateTimer?.invalidate()
         sourceController.video?.stop()
-        sourceController.video.deinit0()
+        sourceController.video?.deinit0()
         movieFileManager.saveState()
         let view = self.view as! UITableView
         view.reloadData()
