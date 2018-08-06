@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="JhA-Oz-uR8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6UK-v0-vdD">
     <device id="ipad9_7" orientation="landscape">
         <adaptation id="fullscreen"/>
     </device>
@@ -16,11 +16,11 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="MovieViewController" customModule="EPlayer" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="708"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RHu-Kh-Ikf">
-                                <rect key="frame" x="0.0" y="0.0" width="1024" height="724"/>
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="664"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <bool key="isElement" value="YES"/>
                                 </accessibility>
@@ -41,7 +41,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eWJ-a2-QMX" userLabel="Subtitle Label">
-                                <rect key="frame" x="512" y="699" width="0.0" height="0.0"/>
+                                <rect key="frame" x="512" y="639" width="0.0" height="0.0"/>
                                 <attributedString key="attributedText"/>
                                 <color key="highlightedColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <variation key="heightClass=regular-widthClass=regular">
@@ -55,7 +55,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l7o-Ny-QqY" userLabel="Next Btn">
-                                <rect key="frame" x="963" y="628" width="41" height="36"/>
+                                <rect key="frame" x="963" y="568" width="41" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="Next"/>
                                 <connections>
@@ -63,7 +63,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kl9-xr-7ZD" userLabel="Prev Btn">
-                                <rect key="frame" x="20" y="628" width="39" height="36"/>
+                                <rect key="frame" x="20" y="568" width="39" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="Prev"/>
                                 <connections>
@@ -84,7 +84,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hhd-DY-urH">
-                                <rect key="frame" x="967" y="552" width="37" height="36"/>
+                                <rect key="frame" x="967" y="492" width="37" height="36"/>
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="20"/>
                                 <color key="tintColor" red="0.99496033031088082" green="0.99496033031088082" blue="0.99496033031088082" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" title="play"/>
@@ -93,7 +93,7 @@
                                 </connections>
                             </button>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="omz-Yw-e2f">
-                                <rect key="frame" x="804" y="234" width="200" height="300"/>
+                                <rect key="frame" x="804" y="204" width="200" height="300"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="300" id="NBd-HR-BFa"/>
                                     <constraint firstAttribute="width" constant="200" id="Owl-la-GNk"/>
@@ -103,13 +103,13 @@
                                 </connections>
                             </containerView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aGn-da-SGG" userLabel="elaspedTime">
-                                <rect key="frame" x="8" y="691" width="46" height="21"/>
+                                <rect key="frame" x="8" y="631" width="46" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dwb-O2-A1n" userLabel="remainedTime">
-                                <rect key="frame" x="970" y="691" width="46" height="21"/>
+                                <rect key="frame" x="970" y="631" width="46" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -338,9 +338,9 @@
         <!--File List View Controller-->
         <scene sceneID="HnI-pB-bmW">
             <objects>
-                <tableViewController id="JhA-Oz-uR8" customClass="FileListViewController" customModule="EPlayer" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="fileListViewController" id="JhA-Oz-uR8" customClass="FileListViewController" customModule="EPlayer" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="BQB-rp-06o">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="708"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
@@ -389,7 +389,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wOY-XS-0R1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-244" y="222"/>
+            <point key="canvasLocation" x="-244" y="203"/>
         </scene>
         <!--Movie Panel Controller-->
         <scene sceneID="4kw-c4-m4I">
@@ -417,6 +417,60 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JAO-d8-NTI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="500" y="788"/>
+        </scene>
+        <!--Entry View Controller-->
+        <scene sceneID="dFO-ea-aT6">
+            <objects>
+                <viewController id="6UK-v0-vdD" customClass="EntryViewController" customModule="EPlayer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="QwZ-Y7-Qr7">
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5hV-fO-4nP" userLabel="ControlPanel">
+                                <rect key="frame" x="0.0" y="20" width="1024" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="A6T-aC-LSg"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="8nL-JV-DIM" kind="embed" id="ch4-d2-4xE"/>
+                                </connections>
+                            </containerView>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="43m-2n-56C" userLabel="FileListView">
+                                <rect key="frame" x="0.0" y="60" width="1024" height="708"/>
+                                <connections>
+                                    <segue destination="JhA-Oz-uR8" kind="embed" id="gbO-7k-Y0n"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="5hV-fO-4nP" firstAttribute="top" secondItem="8oi-3T-xfl" secondAttribute="top" id="2cy-cg-FcU"/>
+                            <constraint firstItem="8oi-3T-xfl" firstAttribute="trailing" secondItem="43m-2n-56C" secondAttribute="trailing" id="6xL-5L-9XD"/>
+                            <constraint firstItem="43m-2n-56C" firstAttribute="leading" secondItem="QwZ-Y7-Qr7" secondAttribute="leading" id="Dly-7e-Yog"/>
+                            <constraint firstItem="43m-2n-56C" firstAttribute="bottom" secondItem="8oi-3T-xfl" secondAttribute="bottom" id="ScQ-Ot-e39"/>
+                            <constraint firstItem="43m-2n-56C" firstAttribute="top" secondItem="5hV-fO-4nP" secondAttribute="bottom" id="TOQ-bf-5eO"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="8oi-3T-xfl"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zbg-AZ-z8M" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-244" y="-547"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="Tin-fA-RxL">
+            <objects>
+                <viewController storyboardIdentifier="fileTableView" id="8nL-JV-DIM" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="vXU-I4-uci">
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="40"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="lV7-vS-YMy"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="clz-PG-Ipj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-218" y="-941"/>
         </scene>
     </scenes>
 </document>

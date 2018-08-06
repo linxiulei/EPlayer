@@ -49,6 +49,7 @@
 		D9D1BC742063A706001EBC76 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9D1BC712063A706001EBC76 /* libpng.a */; };
 		D9D1BC752063A706001EBC76 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9D1BC722063A706001EBC76 /* libfreetype.a */; };
 		D9D1BC762063A706001EBC76 /* libfribidi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9D1BC732063A706001EBC76 /* libfribidi.a */; };
+		D9E24DCE2118116300CF85EA /* EntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E24DCD2118116300CF85EA /* EntryViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -310,6 +311,7 @@
 		D9D1BC712063A706001EBC76 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = EPlayer/libass/lib/libpng.a; sourceTree = "<group>"; };
 		D9D1BC722063A706001EBC76 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = EPlayer/libass/lib/libfreetype.a; sourceTree = "<group>"; };
 		D9D1BC732063A706001EBC76 /* libfribidi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfribidi.a; path = EPlayer/libass/lib/libfribidi.a; sourceTree = "<group>"; };
+		D9E24DCD2118116300CF85EA /* EntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -410,6 +412,7 @@
 				D9D15BC220830327007108D8 /* SubtitleDownloader */,
 				D90A549F20707C8D00C275E0 /* Dictionary.swift */,
 				D9AB8B1C206A4C5900CE5EA2 /* FileListViewController.swift */,
+				D9E24DCD2118116300CF85EA /* EntryViewController.swift */,
 				D915D114205BBBFF000BE745 /* AppDelegate.swift */,
 				D915D2A0205CC444000BE745 /* Video.swift */,
 				D98DCD3E2078EB1D009B8401 /* Subrip.swift */,
@@ -1012,6 +1015,7 @@
 				D9D15BC620830386007108D8 /* api.swift in Sources */,
 				D9B555C52068945900116ABB /* MyUI.swift in Sources */,
 				D9D15BC82083045C007108D8 /* Shooter.swift in Sources */,
+				D9E24DCE2118116300CF85EA /* EntryViewController.swift in Sources */,
 				D90A54A020707C8D00C275E0 /* Dictionary.swift in Sources */,
 				D90A549A206FA05400C275E0 /* Utils.swift in Sources */,
 				D9D15BC12081ADE7007108D8 /* SubtitleDelayController.swift in Sources */,
@@ -1138,6 +1142,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				VALID_ARCHS = "arm64 armv7";
 			};
 			name = Debug;
@@ -1194,6 +1199,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "arm64 armv7";
 			};
