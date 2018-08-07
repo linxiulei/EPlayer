@@ -30,6 +30,11 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
     @IBOutlet weak var checkAllBox: BEMCheckBox!
     @IBOutlet weak var checkAllBoxWidth: NSLayoutConstraint!
     
+    @IBAction func clickRefresh(_ sender: UIButton) {
+        fileListView?.movieFileManager = MovieFileManager()
+        fileListView?.tableView.reloadData()
+    }
+    
     func didTap (_ box: BEMCheckBox) {
         guard let fileListView = fileListView else {
             return
@@ -55,7 +60,7 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
         guard let fileListView = fileListView else {
             return
         }
-        
+        checkAllBox.on = false
         if deleteActive {
             sender.setTitle("File", for: UIControlState.normal)
             deleteActive = false

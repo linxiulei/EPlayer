@@ -484,8 +484,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="40"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mTF-mQ-dRy" customClass="BEMCheckBox">
-                                <rect key="frame" x="0.0" y="7.5" width="0.0" height="25.5"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mTF-mQ-dRy" customClass="BEMCheckBox">
+                                <rect key="frame" x="10" y="7.5" width="0.0" height="25.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" button="YES"/>
@@ -495,29 +495,41 @@
                                     <constraint firstAttribute="width" id="dxk-lw-QDT"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kTj-ZG-nBw">
-                                <rect key="frame" x="964" y="5" width="30" height="30"/>
-                                <state key="normal" title="File"/>
-                                <connections>
-                                    <action selector="clickFile:" destination="8nL-JV-DIM" eventType="touchUpInside" id="6em-rd-j2q"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kDj-Sg-mOS">
-                                <rect key="frame" x="903" y="5" width="31" height="30"/>
+                                <rect key="frame" x="810" y="5" width="31" height="30"/>
                                 <state key="normal" title="WIFI"/>
                                 <connections>
                                     <action selector="clickWifi:forEvent:" destination="8nL-JV-DIM" eventType="touchDown" id="cpe-Hq-ZrJ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uWI-e3-KgF">
+                                <rect key="frame" x="871" y="5" width="53" height="30"/>
+                                <state key="normal" title="Refresh"/>
+                                <connections>
+                                    <action selector="clickRefresh:" destination="8nL-JV-DIM" eventType="touchUpInside" id="nMX-3Y-8ez"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kTj-ZG-nBw">
+                                <rect key="frame" x="944" y="5" width="50" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="P5H-dY-gEJ"/>
+                                </constraints>
+                                <state key="normal" title="File"/>
+                                <connections>
+                                    <action selector="clickFile:" destination="8nL-JV-DIM" eventType="touchUpInside" id="6em-rd-j2q"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="kTj-ZG-nBw" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="4Xv-gx-n2l"/>
-                            <constraint firstItem="kTj-ZG-nBw" firstAttribute="leading" secondItem="kDj-Sg-mOS" secondAttribute="trailing" constant="30" id="PY7-e2-b4m"/>
-                            <constraint firstItem="lV7-vS-YMy" firstAttribute="trailing" secondItem="kTj-ZG-nBw" secondAttribute="trailing" constant="30" id="aAv-8M-hAw"/>
+                            <constraint firstItem="lV7-vS-YMy" firstAttribute="trailing" secondItem="kTj-ZG-nBw" secondAttribute="trailing" constant="30" id="6DZ-Uc-R25"/>
+                            <constraint firstItem="uWI-e3-KgF" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="TpS-y9-iqR"/>
+                            <constraint firstItem="kTj-ZG-nBw" firstAttribute="leading" secondItem="uWI-e3-KgF" secondAttribute="trailing" constant="20" id="aoN-23-dU0"/>
                             <constraint firstItem="mTF-mQ-dRy" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="e3W-Hf-GCB"/>
                             <constraint firstItem="kDj-Sg-mOS" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="fb4-zI-7GC"/>
-                            <constraint firstItem="mTF-mQ-dRy" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lV7-vS-YMy" secondAttribute="leading" constant="10" id="xAE-5c-BhE"/>
+                            <constraint firstItem="uWI-e3-KgF" firstAttribute="leading" secondItem="kDj-Sg-mOS" secondAttribute="trailing" constant="30" id="gle-iv-Oay"/>
+                            <constraint firstItem="mTF-mQ-dRy" firstAttribute="leading" secondItem="lV7-vS-YMy" secondAttribute="leading" constant="10" id="xAE-5c-BhE"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="lV7-vS-YMy"/>
                     </view>
@@ -530,7 +542,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="clz-PG-Ipj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-245" y="-1092"/>
+            <point key="canvasLocation" x="-245.50781249999997" y="-1092.1875"/>
         </scene>
     </scenes>
 </document>
