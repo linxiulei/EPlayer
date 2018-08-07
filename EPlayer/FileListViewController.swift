@@ -9,10 +9,13 @@
 import UIKit
 import os
 import os.log
+import BEMCheckBox
 
 class FileListCell: UITableViewCell {
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var progress: UILabel!
+    @IBOutlet weak var checkBox: BEMCheckBox!
+    @IBOutlet weak var checkBoxWidth: NSLayoutConstraint!
     
 }
 
@@ -81,7 +84,7 @@ class FileListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //performSegue(withIdentifier: "fileURL", sender: fileList[indexPath.row])
     }
-    
+        
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "fileURL") {
             guard let fileIndex = tableView.indexPathForSelectedRow?.row else {

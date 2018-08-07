@@ -4,16 +4,19 @@ PODS:
   - AlamofireXMLRPC (2.2.0):
     - AEXML
     - Alamofire
+  - BEMCheckBox (1.4.1)
   - GzipSwift (4.0.4)
 
 DEPENDENCIES:
   - AlamofireXMLRPC (from `https://github.com/kodlian/AlamofireXMLRPC.git`)
+  - BEMCheckBox
   - GzipSwift
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - AEXML
     - Alamofire
+    - BEMCheckBox
     - GzipSwift
 
 EXTERNAL SOURCES:
@@ -29,8 +32,9 @@ SPEC CHECKSUMS:
   AEXML: bae92c01e0da64132fd72f748721cda07466032b
   Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
   AlamofireXMLRPC: 2c3ce65366298bf453273a3a670d6c154bf12689
+  BEMCheckBox: 5ba6e37ade3d3657b36caecc35c8b75c6c2b1a4e
   GzipSwift: 1a5bc5f7827e09846b0635b5079f1224bc3b1c3a
 
-PODFILE CHECKSUM: 17456c246b3dea0f40dafd19fe6421a07b960927
+PODFILE CHECKSUM: 6ec9929580266df3dfa914dafd434a708879ae28
 
 COCOAPODS: 1.5.0

@@ -351,27 +351,44 @@
                                     <rect key="frame" x="0.0" y="0.0" width="1024" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="huB-1J-0ff">
-                                            <rect key="frame" x="20" y="11" width="42" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
+                                        <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sKe-jA-Vcv" customClass="BEMCheckBox">
+                                            <rect key="frame" x="10" y="10" width="0.0" height="23.5"/>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <accessibility key="accessibilityConfiguration">
+                                                <accessibilityTraits key="traits" button="YES"/>
+                                            </accessibility>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="23.5" id="Eyf-VD-whu"/>
+                                                <constraint firstAttribute="width" id="non-kb-029"/>
+                                            </constraints>
+                                        </view>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M7F-Fw-nv5">
                                             <rect key="frame" x="962" y="11" width="42" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="huB-1J-0ff">
+                                            <rect key="frame" x="10" y="11" width="42" height="20.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="sKe-jA-Vcv" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="3HR-7G-Dw6"/>
+                                        <constraint firstItem="huB-1J-0ff" firstAttribute="leading" secondItem="sKe-jA-Vcv" secondAttribute="trailing" id="8KI-0A-14R"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="M7F-Fw-nv5" secondAttribute="trailing" id="Apx-c9-s5r"/>
                                         <constraint firstItem="M7F-Fw-nv5" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="C4t-uw-heI"/>
                                         <constraint firstItem="huB-1J-0ff" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="OB0-gT-Dq8"/>
-                                        <constraint firstItem="huB-1J-0ff" firstAttribute="leading" secondItem="Oxx-uw-sJK" secondAttribute="leadingMargin" id="baW-eK-EtY"/>
+                                        <constraint firstItem="sKe-jA-Vcv" firstAttribute="leading" secondItem="Oxx-uw-sJK" secondAttribute="leading" constant="10" id="OTM-sy-CgE"/>
+                                        <constraint firstAttribute="bottom" secondItem="sKe-jA-Vcv" secondAttribute="bottom" constant="10" id="b2C-fW-wSX"/>
+                                        <constraint firstItem="sKe-jA-Vcv" firstAttribute="top" secondItem="Oxx-uw-sJK" secondAttribute="top" constant="10" id="vQE-KT-aDT"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="checkBox" destination="sKe-jA-Vcv" id="Ifj-5w-5Vf"/>
+                                    <outlet property="checkBoxWidth" destination="non-kb-029" id="Ocq-RM-1eM"/>
                                     <outlet property="fileName" destination="huB-1J-0ff" id="CX5-om-ir7"/>
                                     <outlet property="progress" destination="M7F-Fw-nv5" id="53A-KP-lMh"/>
                                     <segue destination="BYZ-38-t0r" kind="show" identifier="fileURL" id="Mj9-RT-0bn"/>
@@ -389,7 +406,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wOY-XS-0R1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-244" y="203"/>
+            <point key="canvasLocation" x="-244.33593749999997" y="202.34375"/>
         </scene>
         <!--Movie Panel Controller-->
         <scene sceneID="4kw-c4-m4I">
@@ -426,7 +443,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <containerView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5hV-fO-4nP" userLabel="ControlPanel">
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5hV-fO-4nP" userLabel="ControlPanel">
                                 <rect key="frame" x="0.0" y="20" width="1024" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="A6T-aC-LSg"/>
@@ -449,6 +466,8 @@
                             <constraint firstItem="43m-2n-56C" firstAttribute="leading" secondItem="QwZ-Y7-Qr7" secondAttribute="leading" id="Dly-7e-Yog"/>
                             <constraint firstItem="43m-2n-56C" firstAttribute="bottom" secondItem="8oi-3T-xfl" secondAttribute="bottom" id="ScQ-Ot-e39"/>
                             <constraint firstItem="43m-2n-56C" firstAttribute="top" secondItem="5hV-fO-4nP" secondAttribute="bottom" id="TOQ-bf-5eO"/>
+                            <constraint firstItem="5hV-fO-4nP" firstAttribute="trailing" secondItem="8oi-3T-xfl" secondAttribute="trailing" id="Usi-bv-q9d"/>
+                            <constraint firstItem="5hV-fO-4nP" firstAttribute="leading" secondItem="8oi-3T-xfl" secondAttribute="leading" id="grO-GR-UdN"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="8oi-3T-xfl"/>
                     </view>
@@ -457,20 +476,61 @@
             </objects>
             <point key="canvasLocation" x="-244" y="-547"/>
         </scene>
-        <!--View Controller-->
+        <!--Control Panel Controller-->
         <scene sceneID="Tin-fA-RxL">
             <objects>
-                <viewController storyboardIdentifier="fileTableView" id="8nL-JV-DIM" sceneMemberID="viewController">
+                <viewController id="8nL-JV-DIM" customClass="ControlPanelController" customModule="EPlayer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vXU-I4-uci">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="40"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mTF-mQ-dRy" customClass="BEMCheckBox">
+                                <rect key="frame" x="0.0" y="7.5" width="0.0" height="25.5"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES"/>
+                                </accessibility>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="25.5" id="XL2-CJ-SJj"/>
+                                    <constraint firstAttribute="width" id="dxk-lw-QDT"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kTj-ZG-nBw">
+                                <rect key="frame" x="964" y="5" width="30" height="30"/>
+                                <state key="normal" title="File"/>
+                                <connections>
+                                    <action selector="clickFile:" destination="8nL-JV-DIM" eventType="touchUpInside" id="6em-rd-j2q"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kDj-Sg-mOS">
+                                <rect key="frame" x="903" y="5" width="31" height="30"/>
+                                <state key="normal" title="WIFI"/>
+                                <connections>
+                                    <action selector="clickWifi:forEvent:" destination="8nL-JV-DIM" eventType="touchDown" id="cpe-Hq-ZrJ"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="kTj-ZG-nBw" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="4Xv-gx-n2l"/>
+                            <constraint firstItem="kTj-ZG-nBw" firstAttribute="leading" secondItem="kDj-Sg-mOS" secondAttribute="trailing" constant="30" id="PY7-e2-b4m"/>
+                            <constraint firstItem="lV7-vS-YMy" firstAttribute="trailing" secondItem="kTj-ZG-nBw" secondAttribute="trailing" constant="30" id="aAv-8M-hAw"/>
+                            <constraint firstItem="mTF-mQ-dRy" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="e3W-Hf-GCB"/>
+                            <constraint firstItem="kDj-Sg-mOS" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="fb4-zI-7GC"/>
+                            <constraint firstItem="mTF-mQ-dRy" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lV7-vS-YMy" secondAttribute="leading" constant="10" id="xAE-5c-BhE"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="lV7-vS-YMy"/>
                     </view>
+                    <connections>
+                        <outlet property="checkAllBox" destination="mTF-mQ-dRy" id="l1Q-g6-RFZ"/>
+                        <outlet property="checkAllBoxWidth" destination="dxk-lw-QDT" id="pRN-0j-1FQ"/>
+                        <outlet property="fileBtn" destination="kTj-ZG-nBw" id="1db-2C-46I"/>
+                        <outlet property="wifiBtn" destination="kDj-Sg-mOS" id="U3y-C0-218"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="clz-PG-Ipj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-218" y="-941"/>
+            <point key="canvasLocation" x="-245" y="-1092"/>
         </scene>
     </scenes>
 </document>
