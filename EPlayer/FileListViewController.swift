@@ -186,10 +186,12 @@ class MovieFileManager {
     var dir: String
     var stateFilePath: String
     var curIndex: Int = 0
+    var documentsURL: URL
+    var libraryURL: URL
     init() {
         let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let libraryURL = fileManager.urls(for: .libraryDirectory, in: .userDomainMask)[0]
+        documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        libraryURL = fileManager.urls(for: .libraryDirectory, in: .userDomainMask)[0]
         dir = documentsURL.path
         stateFilePath = libraryURL.appendingPathComponent("movie_file_state.json").path
         let sf = loadState()
@@ -212,6 +214,39 @@ class MovieFileManager {
             }
         } catch {
             print("Error occurs while walking directory")
+        }
+    }
+    
+    func deleteFileByName(_ filename: String) {
+        let fileManager = FileManager.default
+        var index: Int = 0
+        for m in movieFiles {
+            if m.getName() == filename {
+                movieFiles.remove(at: index)
+                break
+            }
+            index += 1
+        }
+        
+        do {
+            let filepath = documentsURL.appendingPathComponent(filename).path
+            try fileManager.removeItem(atPath: filepath)
+        }
+        catch let error as NSError {
+            print("Ooops! Something went wrong: \(error)")
+        }
+    }
+    
+    func deleteFileByIndex(_ index: Int) {
+        movieFiles.remove(at: index)
+    }
+    
+    func deleteFileByIndexes(_ indexes: [Int]) {
+        var newIndexes = indexes
+        newIndexes.sort()
+        newIndexes.reverse()
+        for i in newIndexes {
+            deleteFileByIndex(i)
         }
     }
     
