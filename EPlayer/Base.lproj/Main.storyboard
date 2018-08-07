@@ -484,7 +484,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="40"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mTF-mQ-dRy" customClass="BEMCheckBox">
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mTF-mQ-dRy" customClass="BEMCheckBox">
                                 <rect key="frame" x="10" y="7.5" width="0.0" height="25.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <accessibility key="accessibilityConfiguration">

@@ -95,6 +95,7 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
             let fileCell = cell as! FileListCell
             fileCell.checkBoxWidth.constant = 30
             fileCell.checkBox.isHidden = false
+            fileCell.checkBox.reload()
         }
         checkAllBox.isHidden = false
         checkAllBoxWidth.constant = 30
