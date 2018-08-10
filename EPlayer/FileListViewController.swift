@@ -181,6 +181,17 @@ class MovieFile {
     func getName() -> String {
         return url.lastPathComponent
     }
+    
+    func delete() {
+        let fileManager = FileManager.default
+        do {
+            try fileManager.removeItem(atPath: path)
+        }
+        catch let error as NSError {
+            print("Ooops! Something went wrong: \(error)")
+        }
+
+    }
 }
 
 
@@ -226,6 +237,7 @@ class MovieFileManager {
         for m in movieFiles {
             if m.getName() == filename {
                 movieFiles.remove(at: index)
+                m.delete()
                 break
             }
             index += 1
@@ -241,6 +253,7 @@ class MovieFileManager {
     }
     
     func deleteFileByIndex(_ index: Int) {
+        movieFiles[index].delete()
         movieFiles.remove(at: index)
     }
     
