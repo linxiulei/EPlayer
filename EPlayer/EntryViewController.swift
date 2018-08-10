@@ -31,74 +31,48 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
     @IBOutlet weak var checkAllBoxWidth: NSLayoutConstraint!
     
     @IBAction func clickRefresh(_ sender: UIButton) {
-        fileListView?.movieFileManager = MovieFileManager()
-        fileListView?.tableView.reloadData()
+        fileListView?.refreshFile()
     }
     
     func didTap (_ box: BEMCheckBox) {
         guard let fileListView = fileListView else {
             return
         }
-        
-        if checkAll {
-            checkAll = false
-            for cell in fileListView.tableView.visibleCells {
-                let fileCell = cell as! FileListCell
-                fileCell.checkBox.on = false
-            }
-            return
-        }
-        
-        for cell in fileListView.tableView.visibleCells {
-            let fileCell = cell as! FileListCell
-            fileCell.checkBox.on = true
-        }
-        checkAll = true
+
+        fileListView.checkAllBoxes(box.on)
     }
     
     @IBAction func clickFile(_ sender: UIButton) {
         guard let fileListView = fileListView else {
             return
         }
-        checkAllBox.on = false
+
         if deleteActive {
             sender.setTitle("File", for: UIControlState.normal)
             deleteActive = false
             
-            for cell in fileListView.tableView.visibleCells {
-                let fileCell = cell as! FileListCell
-                if fileCell.checkBox.on {
-                    fileCell.checkBox.on = false
-                    guard let filename = fileCell.fileName.text else {
-                        continue
-                    }
-                    let movieFileManager = fileListView.movieFileManager
-                    movieFileManager.deleteFileByName(filename)
-                }
-            }
-
+            fileListView.deleteCheckedFiles()
+            fileListView.checkBoxActived = false
             fileListView.tableView.reloadData()
-            for cell in fileListView.tableView.visibleCells {
-                let fileCell = cell as! FileListCell
-                
-                fileCell.checkBox.isHidden = true
-                fileCell.checkBoxWidth.constant = 0
-            }
+            
             checkAllBox.isHidden = true
             checkAllBoxWidth.constant = 0
             return
         }
         
+        fileListView.checkBoxActived = true
         deleteActive = true
         sender.setTitle("Delete", for: UIControlState.normal)
-        for cell in fileListView.tableView.visibleCells {
-            let fileCell = cell as! FileListCell
-            fileCell.checkBoxWidth.constant = 30
-            fileCell.checkBox.isHidden = false
-            fileCell.checkBox.reload()
+        fileListView.forEachVisibleRow() { (_ cell: FileListCell) in
+            cell.checkBoxWidth.constant = 30
+            cell.checkBox.isHidden = false
+            cell.checkBox.on = false
+            cell.checkBox.reload()
         }
+
         checkAllBox.isHidden = false
         checkAllBoxWidth.constant = 30
+        checkAllBox.on = false
     }
     
     @IBAction func clickWifi(_ sender: UIButton, forEvent event: UIEvent) {

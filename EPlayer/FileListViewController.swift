@@ -11,16 +11,23 @@ import os
 import os.log
 import BEMCheckBox
 
-class FileListCell: UITableViewCell {
+class FileListCell: UITableViewCell, BEMCheckBoxDelegate {
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var progress: UILabel!
     @IBOutlet weak var checkBox: BEMCheckBox!
     @IBOutlet weak var checkBoxWidth: NSLayoutConstraint!
+    var tapCallback: (() -> ())?
     
+    func didTap (_ box: BEMCheckBox) {
+        tapCallback!()
+    }
 }
 
 class FileListViewController: UITableViewController {
     var movieFileManager = MovieFileManager()
+    var checkBoxActived: Bool = false
+    var checkBoxChecked: [Bool] = []
+    
     /*
     override var shouldAutorotate: Bool {
         return true
@@ -30,9 +37,45 @@ class FileListViewController: UITableViewController {
         return UIInterfaceOrientation.landscapeLeft
     }
  */
+    func refreshFile () {
+        movieFileManager = MovieFileManager()
+        checkBoxChecked = [Bool](repeating: false, count: movieFileManager.getFileCount())
+        tableView.reloadData()
+    }
+    
+    func deleteCheckedFiles () {
+        for i in (0..<checkBoxChecked.count).reversed() {
+            if checkBoxChecked[i]{
+                checkBoxChecked.remove(at: i)
+                movieFileManager.deleteFileByIndex(i)
+            }
+        }
+    }
+    
+    func forEachVisibleRow (closure: @escaping (_ cell: FileListCell) -> Void) {
+        let section = 0
+        let rows = tableView.numberOfRows(inSection: section)
+        for r in 0..<rows {
+            guard let cell = tableView.cellForRow(at: IndexPath(row: r, section: section)) as? FileListCell else {
+                return
+            }
+            closure(cell)
+        }
+    }
+    
+    func checkAllBoxes(_ check: Bool) {
+        for i in 0..<checkBoxChecked.count {
+            checkBoxChecked[i] = check
+        }
+        
+        forEachVisibleRow() { (_ cell: FileListCell) in
+            cell.checkBox.on = check
+        }
+    }
     
     override func viewDidLoad() {
 
+        checkBoxChecked = [Bool](repeating: false, count: movieFileManager.getFileCount())
         /*
         print(UIDevice.current.orientation.rawValue)
         let value = UIInterfaceOrientation.landscapeRight.rawValue
@@ -68,11 +111,40 @@ class FileListViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         return movieFileManager.getFileCount()
     }
+    
+    override func tableView(_ tableView: UITableView,
+                            didEndDisplaying cell: UITableViewCell,
+                            forRowAt indexPath: IndexPath) {
+        let cell = cell as! FileListCell
+        if checkBoxActived {
+            checkBoxChecked[indexPath.row] = cell.checkBox.on
+        }
+        cell.checkBox.on = false
+    }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FileCell", for: indexPath) as! FileListCell
         let movieFile = movieFileManager.getMovieFileByIndex(indexPath.row)
         cell.fileName.text = movieFile.getName()
+        cell.checkBox.delegate = cell
+
+        func tapCB () {
+            checkBoxChecked[indexPath.row] = !checkBoxChecked[indexPath.row]
+        }
+        
+        cell.tapCallback = tapCB
+
+        
+        if checkBoxActived {
+            cell.checkBox.isHidden = false
+            cell.checkBoxWidth.constant = 30
+            
+
+            cell.checkBox.on = checkBoxChecked[indexPath.row]
+        } else {
+            cell.checkBox.isHidden = true
+            cell.checkBoxWidth.constant = 0
+        }
         if movieFile.isMovie() {
             cell.progress.text = "\(movieFile.getProgress())%"
         } else {
