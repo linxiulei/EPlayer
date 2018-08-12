@@ -5,6 +5,8 @@ target 'EPlayer' do
     pod 'AlamofireXMLRPC', :git => 'https://github.com/kodlian/AlamofireXMLRPC.git'
     pod 'GzipSwift'
     pod 'BEMCheckBox'
+    pod 'Embassy', '~> 4.0'
+    pod "FGRoute"
 end
 
 # Workaround for Cocoapods issue #7606
