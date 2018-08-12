@@ -17,7 +17,7 @@ class FileListCell: UITableViewCell, BEMCheckBoxDelegate {
     @IBOutlet weak var checkBox: BEMCheckBox!
     @IBOutlet weak var checkBoxWidth: NSLayoutConstraint!
     var tapCallback: (() -> ())?
-    
+
     func didTap (_ box: BEMCheckBox) {
         tapCallback!()
     }
@@ -27,12 +27,12 @@ class FileListViewController: UITableViewController {
     var movieFileManager = MovieFileManager()
     var checkBoxActived: Bool = false
     var checkBoxChecked: [Bool] = []
-    
+
     /*
     override var shouldAutorotate: Bool {
         return true
     }
-    
+
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
         return UIInterfaceOrientation.landscapeLeft
     }
@@ -42,7 +42,7 @@ class FileListViewController: UITableViewController {
         checkBoxChecked = [Bool](repeating: false, count: movieFileManager.getFileCount())
         tableView.reloadData()
     }
-    
+
     func deleteCheckedFiles () {
         for i in (0..<checkBoxChecked.count).reversed() {
             if checkBoxChecked[i]{
@@ -51,7 +51,7 @@ class FileListViewController: UITableViewController {
             }
         }
     }
-    
+
     func forEachVisibleRow (closure: @escaping (_ cell: FileListCell) -> Void) {
         let section = 0
         let rows = tableView.numberOfRows(inSection: section)
@@ -62,17 +62,17 @@ class FileListViewController: UITableViewController {
             closure(cell)
         }
     }
-    
+
     func checkAllBoxes(_ check: Bool) {
         for i in 0..<checkBoxChecked.count {
             checkBoxChecked[i] = check
         }
-        
+
         forEachVisibleRow() { (_ cell: FileListCell) in
             cell.checkBox.on = check
         }
     }
-    
+
     override func viewDidLoad() {
 
         checkBoxChecked = [Bool](repeating: false, count: movieFileManager.getFileCount())
@@ -84,7 +84,7 @@ class FileListViewController: UITableViewController {
 
         UIViewController.attemptRotationToDeviceOrientation()
  */
-        
+
         super.viewDidLoad()
 
 
@@ -111,7 +111,7 @@ class FileListViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         return movieFileManager.getFileCount()
     }
-    
+
     override func tableView(_ tableView: UITableView,
                             didEndDisplaying cell: UITableViewCell,
                             forRowAt indexPath: IndexPath) {
@@ -131,14 +131,14 @@ class FileListViewController: UITableViewController {
         func tapCB () {
             checkBoxChecked[indexPath.row] = !checkBoxChecked[indexPath.row]
         }
-        
+
         cell.tapCallback = tapCB
 
-        
+
         if checkBoxActived {
             cell.checkBox.isHidden = false
             cell.checkBoxWidth.constant = 30
-            
+
 
             cell.checkBox.on = checkBoxChecked[indexPath.row]
         } else {
@@ -156,7 +156,7 @@ class FileListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //performSegue(withIdentifier: "fileURL", sender: fileList[indexPath.row])
     }
-        
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "fileURL") {
             guard let fileIndex = tableView.indexPathForSelectedRow?.row else {
@@ -171,7 +171,7 @@ class FileListViewController: UITableViewController {
             movieFileManager.setCurIndex(fileIndex)
         }
     }
-    
+
     @IBAction func unwindToTable(sender: UIStoryboardSegue) {
         let sourceController = sender.source as! MovieViewController
         sourceController.updateTimer?.invalidate()
@@ -204,44 +204,44 @@ class MovieFile {
     var progress = 0
     let VIDEO_SUFFIX = ["mkv", "mp4", "avi"]
     let SUBTITLE_SUFFIX = ["ass", "ssa", "srt"]
-    
+
     init(_ path: String, _ url: URL) {
         self.path = path
         self.url = url
     }
-    
+
     func getCategory() -> FileCategory {
         if VIDEO_SUFFIX.contains(url.pathExtension) {
             return FileCategory.Movie
         }
-        
+
         if SUBTITLE_SUFFIX.contains(url.pathExtension) {
             return FileCategory.Subtitle
         }
         if isDir() {
             return FileCategory.Directory
         }
-        
+
         os_log("unknow category %@", type: .debug, path)
         return FileCategory.Unknown
     }
-    
+
     func getType() -> String {
         return url.pathExtension
     }
-    
+
     func getProgress() -> Int {
         return progress
     }
-    
+
     func setProgress(_ progress: Int) {
         self.progress = progress
     }
-    
+
     func isMovie() -> Bool {
         return getCategory() == FileCategory.Movie
     }
-    
+
     func isDir() -> Bool {
         var isDirectory = ObjCBool(false)
         if FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) {
@@ -249,11 +249,11 @@ class MovieFile {
         }
         return false
     }
-    
+
     func getName() -> String {
         return url.lastPathComponent
     }
-    
+
     func delete() {
         let fileManager = FileManager.default
         do {
@@ -296,13 +296,13 @@ class MovieFileManager {
                 }
                 m.progress = state.progress
                 movieFiles.append(m)
-                
+
             }
         } catch {
             print("Error occurs while walking directory")
         }
     }
-    
+
     func deleteFileByName(_ filename: String) {
         let fileManager = FileManager.default
         var index: Int = 0
@@ -314,7 +314,7 @@ class MovieFileManager {
             }
             index += 1
         }
-        
+
         do {
             let filepath = documentsURL.appendingPathComponent(filename).path
             try fileManager.removeItem(atPath: filepath)
@@ -323,12 +323,12 @@ class MovieFileManager {
             print("Ooops! Something went wrong: \(error)")
         }
     }
-    
+
     func deleteFileByIndex(_ index: Int) {
         movieFiles[index].delete()
         movieFiles.remove(at: index)
     }
-    
+
     func deleteFileByIndexes(_ indexes: [Int]) {
         var newIndexes = indexes
         newIndexes.sort()
@@ -337,52 +337,52 @@ class MovieFileManager {
             deleteFileByIndex(i)
         }
     }
-    
+
     func writeFile(_ filename: String, _ data: Data) {
         let fileUrl = documentsURL.appendingPathComponent(filename)
         try! data.write(to: fileUrl)
     }
-    
+
     func getFileHandle(_ filename: String) -> FileHandle {
         let filepath = documentsURL.appendingPathComponent(filename).path
 
         return FileHandle(forWritingAtPath: filepath)!
     }
-    
+
     func createFile(_ filename: String, _ recreate: Bool) {
         let filepath = documentsURL.appendingPathComponent(filename).path
         try? FileManager.default.removeItem(atPath: filepath)
         FileManager.default.createFile(atPath: filepath, contents: nil, attributes: nil)
     }
-    
+
     func getFileCount() -> Int {
         return movieFiles.count
     }
-    
+
     func getFilePathByIndex(_ index: Int) -> String {
         return movieFiles[index].path
     }
-    
+
     func getFileNameByIndex(_ index: Int) -> String {
         return movieFiles[index].url.lastPathComponent
     }
-    
+
     func getMovieFileByIndex(_ index: Int) -> MovieFile {
         return movieFiles[index]
     }
-    
+
     func getCurMovieFile() -> MovieFile {
         return movieFiles[curIndex]
     }
-    
+
     func setCurIndex(_ index: Int) {
         curIndex = index
     }
-    
+
     func getCurIndex() -> Int {
         return curIndex
     }
-    
+
     func loadState() -> StateFile? {
         let data = readFileToEndOfFile(stateFilePath)
         do {
@@ -393,7 +393,7 @@ class MovieFileManager {
             return nil
         }
     }
-    
+
     func saveState() {
         var sf = StateFile()
         for movieFile in movieFiles {

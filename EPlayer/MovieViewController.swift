@@ -17,7 +17,7 @@ import os.log
 
 class PanRecognizerWithInitialTouch : UIPanGestureRecognizer  {
     var initialTouchLocation: CGPoint!
-    
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesBegan(touches, with: event)
         initialTouchLocation = touches.first!.location(in: view)
@@ -48,9 +48,9 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
             return UIStatusBarStyle.lightContent
         }
     }
-    
+
     // MARK: Properties
-    
+
     var video: Video!
     var movieFileManager: MovieFileManager?
     var isUIHidden = false
@@ -64,13 +64,13 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
     var statusBarIsHidden = false
     let s = AVAudioSession()
     var moviePanelController: MoviePanelController?
-    
+
     @IBOutlet var leftSwipe: UISwipeGestureRecognizer!
     @IBOutlet var rightSwipe: UISwipeGestureRecognizer!
     @IBOutlet var panGesture: PanRecognizerWithInitialTouch!
     @IBOutlet var singleTap: UITapGestureRecognizer!
     @IBOutlet var doubleTap: UITapGestureRecognizer!
-    
+
     @IBOutlet weak var panelContainerView: UIView!
     @IBOutlet weak var filenameLabel: UILabel!
     @IBOutlet weak var notifyLabel: UILabel!
@@ -83,7 +83,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var subtitleView: UILabel!
     @IBOutlet weak var elaspedTimeLabel: UILabel!
     @IBOutlet weak var remainedTimeLabel: UILabel!
-    
+
     @IBAction func click(_ sender: UIButton, forEvent event: UIEvent) {
         if (video.getStatus() == PlayStatus.pause) {
             sender.setTitle("playing", for: UIControlState.normal)
@@ -93,7 +93,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
             video.pause()
         }
     }
-    
+
     @IBAction func clickPrev(_ sender: UIButton, forEvent event: UIEvent) {
         guard let movieFileManager = movieFileManager else {
             os_log("movieFileManager is not set", type: .error)
@@ -111,7 +111,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
             movieFileManager.saveState()
             video.stop()
             video.deinit0()
-            
+
             progressView.value = 0
             video = Video(path: nextMovieFile.path,
                           view: movieView,
@@ -129,7 +129,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
         print("no more videos")
          */
     }
-    
+
     @IBAction func clickNext(_ sender: UIButton, forEvent event: UIEvent) {
         _ = playNext()
     }
@@ -142,7 +142,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
             os_log("movieFileManager is not set", type: .error)
             return false
         }
-        
+
         var fileIndex = movieFileManager.getCurIndex()
         while(fileIndex < (movieFileManager.getFileCount() - 1)) {
             fileIndex = fileIndex + 1
@@ -154,7 +154,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
             movieFileManager.saveState()
             video.stop()
             video.deinit0()
-            
+
             progressView.value = 0
 
             video = Video(path: nextMovieFile.path,
@@ -170,7 +170,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
         }
         return false
     }
-    
+
     @IBAction func handleOneTap(_ sender: UITapGestureRecognizer) {
         if (sender.state == UIGestureRecognizerState.ended)
         {
@@ -205,7 +205,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
             os_log("hanle one tap")
         }
     }
-    
+
     @IBAction func handleTwoTaps(_ sender: UITapGestureRecognizer) {
         if (sender.state == UIGestureRecognizerState.ended)
         {
@@ -218,7 +218,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
             }
         }
     }
-    
+
     @IBAction func handleLeftSwipe(_ sender: UISwipeGestureRecognizer) {
         let pts = video.getMoviePosition()
         moveMovie(pts - MOVE_STEP)
@@ -227,10 +227,10 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
         let pts = video.getMoviePosition()
         moveMovie(pts + MOVE_STEP)
     }
-    
+
     @IBAction func handlePan(_ sender: PanRecognizerWithInitialTouch) {
         let translation = sender.translation(in: self.view)
-        
+
         if (isOnRightWindow(sender.initialTouchLocation)) {
             if (sender.state == .began) {
                 oriVolume = getVolume()
@@ -255,11 +255,11 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
         }
         volume?.setValue(value, animated: false)
     }
-    
+
     func getVolume() -> Float {
         return s.outputVolume
     }
-    
+
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
                            shouldReceive touch: UITouch) -> Bool {
@@ -272,7 +272,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
         }
         return true
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         volume = volumeView.subviews.first as? UISlider
@@ -281,14 +281,14 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
         panGesture.require(toFail: leftSwipe)
         panGesture.require(toFail: rightSwipe)
         panGesture.delegate = self
-        
+
         guard let moviePanelController = childViewControllers.first as? MoviePanelController else {
             os_log("Didn't find movie panel controller")
             return
         }
         moviePanelController.rootMovieController = self
         self.moviePanelController = moviePanelController
-        
+
         //let value = UIInterfaceOrientation.landscapeLeft.rawValue
         //UIDevice.current.setValue(value, forKey: "orientation")
         //UIViewController.attemptRotationToDeviceOrientation()
@@ -296,20 +296,20 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
 
         var a = Date().timeIntervalSince1970
         guard let movieFileManager = movieFileManager else {
             return
         }
-        
+
         let movieFile = movieFileManager.getCurMovieFile()
         let progress = movieFile.getProgress()
 
         layer = createAVLayer()
         var b = Date().timeIntervalSince1970
         os_log("creating layer uses %f", type: .debug,  b - a)
-        
+
         a = Date().timeIntervalSince1970
         guard let video = Video(path: movieFile.path,
             view: movieView,
@@ -322,27 +322,27 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
                 self.performSegue(withIdentifier: "unwindSegueToFileTable", sender: self)
                 return
         }
-        
+
         self.video = video
         // process files
-        
+
         if (progress > 0) {
             let moveToInMS = Int64(progress) * video.getMovieDuration() / 100
             moveMovie(moveToInMS)
         }
-        
+
         filenameLabel.text = movieFile.getName()
 
         b = Date().timeIntervalSince1970
         os_log("init video use %f", type: .debug, b - a)
         a = Date().timeIntervalSince1970
-        
+
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             let pos = self.video.getMoviePosition()
             self.progressView.value = Float(pos) / 1000
             let percent = self.video.getMoviePositionInPercent()
             movieFileManager.getCurMovieFile().setProgress(percent)
-            
+
             let elaspedTimeString = convertMStoString(pos)
             let remainedTimeString = convertMStoString(self.video.getMovieDuration() - pos)
             self.elaspedTimeLabel.text = elaspedTimeString
@@ -367,7 +367,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
 
         movieView.contentMode = .scaleAspectFit
         movieView.backgroundColor = UIColor.black
-        
+
         progressView = MovieProgress(video)
         //progressView.setThumbImage(UIImage(named: "circle1.png"), for: .normal)
         progressView.translatesAutoresizingMaskIntoConstraints = false
@@ -390,37 +390,37 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
         movieView.isUserInteractionEnabled = true
         movieView.addSubview(progressView)
         movieView.addConstraints([bottomConstraint, leadingConstraint, trailingConstraint])
- 
+
         b = Date().timeIntervalSince1970
         print("create views \(b - a)")
-        
+
 
         movieView.layer.insertSublayer(layer!, at: 0)
-        
+
         moviePanelController!.reload()
     }
-    
+
     func downloadSubtitles() {
         video.downloadSubtitles() {
             self.moviePanelController!.reload()
         }
     }
-    
+
     @objc func sliderValueDidChange(_ sender: MovieProgress!) {
         os_log("seeking slider")
         moveMovie(Int64(sender.value * 1000))
     }
-    
+
     func moveMovie(_ msec: Int64) {
         video.seekTsInMSec = msec
         video.seekReq = true
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
     func notify(_ msg: String) {
         notifyLabel.text = msg
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -438,7 +438,7 @@ func setAudioDesc(_ desc: UnsafeMutablePointer<AudioStreamBasicDescription>,
     //let channels = UInt32(video.aCodecCtx!.pointee.channels)
     // I converted audito to 2-channels format
     let channels = UInt32(2)
-    
+
     desc.pointee.mSampleRate = sampleRate
     //desc.pointee.mSampleRate = 32000
     desc.pointee.mFormatID = AudioFormatID(kAudioFormatLinearPCM)
@@ -463,11 +463,11 @@ func createAVLayer() -> AVSampleBufferDisplayLayer {
     layer.position = CGPoint(x: CGFloat(layer.bounds.width / 2), y: CGFloat(layer.bounds.height / 2))
     layer.videoGravity = AVLayerVideoGravity.resizeAspect
     layer.backgroundColor = UIColor.black.cgColor
-    
+
     //set Timebase
     let _CMTimebasePointer = UnsafeMutablePointer<CMTimebase?>.allocate(capacity: 1)
     CMTimebaseCreateWithMasterClock(kCFAllocatorDefault, CMClockGetHostTimeClock(), _CMTimebasePointer)
-    
+
     layer.controlTimebase = _CMTimebasePointer.pointee
     CMTimebaseSetTime(layer.controlTimebase!, CMTimeMake(1, 1))
     CMTimebaseSetRate(layer.controlTimebase!, 0.0)

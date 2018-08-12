@@ -222,7 +222,7 @@ class MultiPartParser {
         repeat {
             lastLeftover = self._leftover
             let result = getNext(self._leftover)
-            
+
             if result.d.count > 0 || result.headers.count > 0 {
                 r.append((result.d, result.headers))
             }
@@ -236,7 +236,7 @@ class MultiPartParser {
     func getNext(_ data: Data) -> (d: Data, headers: [(String, String)], leftover: Data) {
         let b = "--" + self.boundary + "\r\n"
         let end = "--" + self.boundary + "--\r\n"
-        
+
         let fullData = data
         var leftover = Data()
 
@@ -264,7 +264,7 @@ class MultiPartParser {
             leftover = fullData.subdata(in: (fullData.count - b.count)..<fullData.count)
             return (d, [], leftover)
         }
-        
+
         // len(CRLF) == 2
         var dataEnd = range.lowerBound.encodedOffset
         if range.lowerBound.encodedOffset > 0 {

@@ -24,14 +24,14 @@ class XLSubinfo: Subinfo {
         }
         xlSub = s
     }
-    
+
     override var ext: String {
         get {
             let segs = xlSub.surl!.split(separator: ".")
             return String.init(segs[segs.count - 1])
         }
     }
-    
+
     override var langs: [String] {
         get {
             var l: [String] = []
@@ -44,7 +44,7 @@ class XLSubinfo: Subinfo {
             return l
         }
     }
-    
+
     override var link: String {
         get {
             return xlSub.surl!
@@ -56,53 +56,53 @@ class XLSubinfo: Subinfo {
 
 class XLAPI: DownloaderAPI {
     var apiURL = "http://sub.xmp.sandai.net:8000/subxl/%@.json"
-    
+
     func getFileHash(_ filepath: String) -> String {
         guard let fh = FileHandle(forReadingAtPath: filepath) else {
             os_log("error in open file %@", type: .error, filepath)
             return ""
         }
         let fileSize = fh.seekToEndOfFile()
-        
+
         let offsets = [0, fileSize / 3, fileSize - 0x5000]
         let readLength = 0x5000
-        
+
         var d = Data()
-        
+
         for offset in offsets {
             fh.seek(toFileOffset: offset)
             d.append(fh.readData(ofLength: readLength))
         }
-        
+
         return d.getSha1()
     }
-    
-    
+
+
     override func downloadSubtitles(_ videoFilePath: String,
                            _ lang: String,
                            closure: @escaping (_ subinfo: Subinfo) -> Void) {
-        
+
         let hash = getFileHash(videoFilePath)
         let urlString = String(format: apiURL, hash.uppercased())
-        
+
         guard let url = URL(string: urlString) else { return }
-        
+
         var ret: [Subinfo?] = []
         print(url)
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if error != nil {
                 print("Xunlei: \(error!.localizedDescription)")
             }
-            
+
             guard let data = data else { return }
-            
+
             let ndata = processMalformedUTF8(data)
             do {
                 let result = try JSONDecoder().decode(XLResult.self, from: ndata)
                 for xl in result.sublist {
                     ret.append(XLSubinfo(xl))
                 }
-                
+
                 for sub in ret {
                     guard let sub = sub else {
                         continue

@@ -22,15 +22,15 @@ class Subrip {
         guard let encoding = detectEncoding(data) else {
             throw SubtitleError.UnknowEncoding
         }
-        
+
         guard let content = String.init(data: data, encoding: encoding) else {
             throw SubtitleError.ConvertError(desc: encoding.description)
         }
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss,SSS"
         dateFormatter.timeZone = TimeZone.init(abbreviation: "GMT")
-        
+
         var se = SubEvent()
         var invalidLines = 0
         var errorFlag = false
@@ -41,11 +41,11 @@ class Subrip {
                 errorFlag = false
                 continue
             }
-            
+
             if errorFlag {
                 continue
             }
-            
+
             if (se.serial == -1) {
                 if let serial = Int64(line) {
                     se.serial = serial
@@ -56,7 +56,7 @@ class Subrip {
                     }
                     errorFlag = true
                 }
-                
+
             } else if (se.pts == -1) {
                 let components = line.components(separatedBy: " --> ")
                 let ptsStr0 = components[0]
@@ -80,7 +80,7 @@ class Subrip {
     init? (data: Data) throws {
         try initWithData(data)
     }
-    
+
     init? (filepath: String) {
         let fh = FileHandle(forReadingAtPath: filepath)
         if (fh == nil) {
@@ -116,7 +116,7 @@ class SubEvent {
         self.duration = -1
         self.text = ""
     }
-    
+
     init(_ s: Int64, _ pts: Int64, _ duration: Int64, _ text: String) {
         serial = s
         self.pts = pts

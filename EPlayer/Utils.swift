@@ -14,7 +14,7 @@ class Averager {
     var count: UInt32 = 0
     var total: UInt32 = 0
     var q = [UInt32]()
-    
+
     init(_ initVal: UInt32, _ count: UInt32) {
         for _ in 0..<count {
             q.append(initVal)
@@ -22,13 +22,13 @@ class Averager {
         total = initVal * count
         self.count = count
     }
-    
+
     func addNum(_ n: UInt32) {
         total -= q.remove(at: 0)
         total += UInt32(n)
         q.append(n)
     }
-    
+
     func getAvg() -> UInt32 {
         return total / count
     }
@@ -41,23 +41,23 @@ public struct AVPacketQueue {
     fileprivate var empty_mutex = DispatchSemaphore(value: 1)
     fileprivate var full_mutex = DispatchSemaphore(value: 1)
     fileprivate var mutex = DispatchSemaphore(value: 1)
-    
+
     init(_ size: Int) {
         self.size = size
     }
-    
-    
+
+
     public var isEmpty: Bool {
         return array.isEmpty
     }
-    
+
     public var isFull: Bool {
         if (size != 0) {
             return array.count >= size
         }
         return false
     }
-    
+
     public var count: Int {
         return array.count
     }
@@ -72,10 +72,10 @@ public struct AVPacketQueue {
         }
         return ret
     }
-    
+
     public mutating func dequeue() -> UnsafeMutablePointer<AVPacket>? {
         var ret: UnsafeMutablePointer<AVPacket>? = nil
-        
+
         dispatchQueue.sync {
             if isEmpty {
                 ret = nil
@@ -87,7 +87,7 @@ public struct AVPacketQueue {
         }
         return ret
     }
-    
+
     public mutating func flush() {
         dispatchQueue.sync {
             for (index, _) in array.enumerated() {
@@ -104,7 +104,7 @@ public struct AVPacketQueue {
 }
 
 func swsScale(option: SwsContext, source: UnsafePointer<AVFrame>, target: UnsafePointer<AVFrame>, height: Int32) -> Int32 {
-    
+
     let sourceData = [
         UnsafePointer<UInt8>(source.pointee.data.0),
         UnsafePointer<UInt8>(source.pointee.data.1),
@@ -125,7 +125,7 @@ func swsScale(option: SwsContext, source: UnsafePointer<AVFrame>, target: Unsafe
         source.pointee.linesize.6,
         source.pointee.linesize.7
     ]
-    
+
     let targetData = [
         UnsafeMutablePointer<UInt8>(target.pointee.data.0),
         UnsafeMutablePointer<UInt8>(target.pointee.data.1),
@@ -146,7 +146,7 @@ func swsScale(option: SwsContext, source: UnsafePointer<AVFrame>, target: Unsafe
         target.pointee.linesize.6,
         target.pointee.linesize.7
     ]
-    
+
     let result = sws_scale(
         option,
         sourceData,
@@ -235,7 +235,7 @@ func convertMStoString(_ ms: Int64) -> String {
 
 func dataSha1(_ data: Data) -> String {
     var digest = [UInt8](repeating: 0, count:Int(CC_SHA1_DIGEST_LENGTH))
-    
+
     data.withUnsafeBytes{ (bytes: UnsafePointer<CChar>)->Void in
         CC_SHA1(bytes, CC_LONG(data.count), &digest)
     }
@@ -250,7 +250,7 @@ extension Data {
     func getSha1() -> String {
         let data = self
         var digest = [UInt8](repeating: 0, count:Int(CC_SHA1_DIGEST_LENGTH))
-        
+
         data.withUnsafeBytes{ (bytes: UnsafePointer<CChar>)->Void in
             CC_SHA1(bytes, CC_LONG(data.count), &digest)
         }
@@ -260,11 +260,11 @@ extension Data {
         }
         return output as String
     }
-    
+
     func getMD5() -> String {
         let data = self
         var digest = [UInt8](repeating: 0, count:Int(CC_MD5_DIGEST_LENGTH))
-        
+
         data.withUnsafeBytes{ (bytes: UnsafePointer<CChar>)->Void in
             CC_MD5(bytes, CC_LONG(data.count), &digest)
         }
@@ -290,7 +290,7 @@ func processMalformedUTF8(_ data: Data) -> Data {
     data.append(0)
     let s = data.withUnsafeBytes { (p: UnsafePointer<CChar>) in String(cString: p) }
     let clean = s.replacingOccurrences(of: "\u{FFFD}", with: "")
-    
+
     let d = clean.data(using: String.Encoding.utf8)
     return d!
 }
@@ -331,7 +331,7 @@ func detectEncoding(_ data: Data) -> String.Encoding? {
     }
     let charset = uchardet_get_charset(uchardetHandler)
     let charsetString = String.init(cString: charset!)
-    
+
     uchardet_delete(uchardetHandler)
     let encoding = EncodingMap[charsetString]
     if (encoding == nil) {
@@ -344,10 +344,10 @@ class MovieGuesser {
     var movieName: String
     var season: Int32?
     var episode: Int32?
-    
+
     init(_ filename: String) {
         let pattern = "([\\w. ]+)[sS](\\d+)[eE](\\d+).*"
-        
+
         let regex = try! NSRegularExpression(pattern: pattern,
                                                  options: [])
         let matches = regex.matches(in: filename, options: [], range: NSMakeRange(0, filename.count))

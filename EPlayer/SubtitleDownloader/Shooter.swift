@@ -18,19 +18,19 @@ class ShooterSubinfo: Subinfo {
         apiFileStruct = s
         self.lang = lang
     }
-    
+
     override var ext: String {
         get {
             return apiFileStruct.Ext
         }
     }
-    
+
     override var langs: [String] {
         get {
             return [lang]
         }
     }
-    
+
     override var link: String {
         get {
             return apiFileStruct.Link
@@ -42,18 +42,18 @@ class ShooterSubinfo: Subinfo {
 
 class ShooterAPI: DownloaderAPI {
     var apiURL = "https://www.shooter.cn/api/subapi.php"
-    
+
     func getFileHash(_ filepath: String) -> String {
         guard let fh = FileHandle(forReadingAtPath: filepath) else {
             os_log("error in open file %@", type: .error, filepath)
             return ""
         }
-        
+
         let fileSize = fh.seekToEndOfFile()
-        
+
         let offsets = [4096, fileSize / 3 * 2, fileSize / 3, fileSize - 8192]
         let readLength = 4096
-        
+
         var ret = [String]()
         for offset in offsets {
             fh.seek(toFileOffset: offset)
@@ -63,8 +63,8 @@ class ShooterAPI: DownloaderAPI {
 
         return ret.joined(separator: ":")
     }
-    
-    
+
+
     override func downloadSubtitles(_ videoFilePath: String,
                            _ lang: String,
                            closure: @escaping (_ subinfo: Subinfo) -> Void) {
@@ -80,13 +80,13 @@ class ShooterAPI: DownloaderAPI {
             "format": "json",
             "lang" : lang
         ]
-        
+
         var queryItems = [URLQueryItem]()
         for (k, v) in values {
             let item = URLQueryItem(name: k, value: v)
             queryItems.append(item)
         }
-        
+
         urlComponents.queryItems = queryItems
 
         var ret: [ShooterSubinfo] = []
@@ -95,7 +95,7 @@ class ShooterAPI: DownloaderAPI {
             if error != nil {
                 print("shooter: \(error!.localizedDescription)")
             }
-            
+
             guard let data = data else { return }
             if (data[0] == 255) {
                 os_log("No subtitles found from Shooter")

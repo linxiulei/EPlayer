@@ -14,20 +14,20 @@ let FORMS = [
     ("ies", ""),
     ("es", ""),
     ("s", ""),
-    
+
     // third person
     ("ies", "y"),
-    
+
     // progressive
     ("ing", ""),
     ("ying", "ie"),
     ("ing", "e"),
-    
+
     // past
     ("ed", ""),
     ("ied", "y"),
     ("ed", "e"),
-    
+
     // short
     ("'ve", ""),
     ("'s", ""),
@@ -35,11 +35,11 @@ let FORMS = [
     ("'t", ""),
     ("'re", ""),
     ("'ll", ""),
-    
+
 ]
 
 class EPDictionary {
-    
+
     var mDict = [String: String]()
     var fwordDict = [String: Bool]()
     init(_ fwordFile: String, _ dictFile: String) {
@@ -54,7 +54,7 @@ class EPDictionary {
                     }
                 }
             } catch {
-                
+
             }
         }
         /*
@@ -65,7 +65,7 @@ class EPDictionary {
         mDict["down"] = "向下"
          */
         //fwordDict["you"] = true
-        
+
         if let path = Bundle.main.path(forResource: "farmiliar5000", ofType: "csv") {
             do {
                 let data = try String(contentsOfFile: path, encoding: .utf8)
@@ -77,17 +77,17 @@ class EPDictionary {
                     }
                 }
             } catch {
-                
+
             }
         }
     }
-    
+
     func isFamiliar(_ word: String) -> Bool {
         let wordLowcased = word.lowercased()
         if (fwordDict[wordLowcased] == true) {
             return true
         }
-        
+
         for (suffix, replace) in FORMS {
             if (wordLowcased.hasSuffix(suffix)) {
                 let ret = fwordDict[wordLowcased.dropLast(suffix.count) + replace]
@@ -98,12 +98,12 @@ class EPDictionary {
         }
         return false
     }
-    
+
     func lookup(_ word: String) -> String? {
         let exp = mDict[word]
         return exp
     }
-    
+
     func lookupWithTransform(_ word: String) -> String? {
         var ret: String?
         for (suffix, replace) in FORMS {
@@ -116,7 +116,7 @@ class EPDictionary {
         }
         return nil
     }
-    
+
     func processLine(_ line: String) -> [String: String] {
         var ret = [String: String]()
         var words = [String]()
@@ -124,7 +124,7 @@ class EPDictionary {
         regex.enumerateMatches(in: line, range: NSMakeRange(0, line.count)) { match, flags, stop in
             words.append((line as NSString).substring(with: match!.range(at: 0)))
         }
-        
+
         for w in words {
             let lowcaseWord = w.lowercased()
             if (isFamiliar(lowcaseWord) == false) {
@@ -139,7 +139,7 @@ class EPDictionary {
                 }
             }
         }
-        
+
         return ret
     }
 }

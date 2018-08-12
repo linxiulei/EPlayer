@@ -10,14 +10,14 @@ import Foundation
 
 class SubtitleDelayController: UIViewController {
     var video: Video?
-    
+
     @IBOutlet weak var delayLabel: UILabel!
     @IBOutlet weak var bigStepbackBtn: UIButton!
     @IBOutlet weak var stepbackBtn: UIButton!
     @IBOutlet weak var stepforwardBtn: UIButton!
     @IBOutlet weak var bigStepForwardBtn: UIButton!
     @IBOutlet weak var resetBtn: UIButton!
-    
+
     @IBAction func delayBtnOnClick(_ sender: UIButton) {
         guard let video = video else {
             return
@@ -36,12 +36,12 @@ class SubtitleDelayController: UIViewController {
         }
         showDelayLabel()
     }
-    
+
     func showDelayLabel() {
         guard let video = video else {
             return
         }
-        
+
         let offsetAbs = abs(Float(video.subtitleOffset) / 1000.0)
         if (video.subtitleOffset > 0) {
             delayLabel.text = "ahead of \(offsetAbs)s"

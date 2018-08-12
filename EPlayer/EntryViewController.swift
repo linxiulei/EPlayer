@@ -15,7 +15,7 @@ class EntryViewController: UIViewController {
     override func viewDidLoad() {
         let panelController = self.childViewControllers[0] as! ControlPanelController
         let fileListController = self.childViewControllers[1] as! FileListViewController
-        
+
         panelController.fileListView = fileListController
         super.viewDidLoad()
     }
@@ -27,17 +27,17 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
     var checkAll: Bool = false
     var fileServer: FileServer! = nil
     var fileServerActived = false
-    
+
     @IBOutlet weak var wifiActiveLabel: UILabel!
     @IBOutlet weak var fileBtn: UIButton!
     @IBOutlet weak var wifiBtn: UIButton!
     @IBOutlet weak var checkAllBox: BEMCheckBox!
     @IBOutlet weak var checkAllBoxWidth: NSLayoutConstraint!
-    
+
     @IBAction func clickRefresh(_ sender: UIButton) {
         fileListView?.refreshFile()
     }
-    
+
     func didTap (_ box: BEMCheckBox) {
         guard let fileListView = fileListView else {
             return
@@ -45,7 +45,7 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
 
         fileListView.checkAllBoxes(box.on)
     }
-    
+
     @IBAction func clickFile(_ sender: UIButton) {
         guard let fileListView = fileListView else {
             return
@@ -54,16 +54,16 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
         if deleteActive {
             sender.setTitle("File", for: UIControlState.normal)
             deleteActive = false
-            
+
             fileListView.deleteCheckedFiles()
             fileListView.checkBoxActived = false
             fileListView.tableView.reloadData()
-            
+
             checkAllBox.isHidden = true
             checkAllBoxWidth.constant = 0
             return
         }
-        
+
         fileListView.checkBoxActived = true
         deleteActive = true
         sender.setTitle("Delete", for: UIControlState.normal)
@@ -78,31 +78,31 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
         checkAllBoxWidth.constant = 30
         checkAllBox.on = false
     }
-    
+
     @IBAction func clickWifi(_ sender: UIButton, forEvent event: UIEvent) {
         let port = 8080
         if fileServer == nil {
             fileServer = getFileServer(fileListView!.movieFileManager, "0.0.0.0", port)
         }
-        
+
         fileServerActived = !fileServerActived
-        
+
         if fileServerActived {
             guard let ipaddress = FGRoute.getIPAddress() else {
                 fileServerActived = false
                 return
             }
-            
+
             wifiActiveLabel.text = "http://\(ipaddress):\(port)/"
         }
-        
+
         if fileServerActived {
             fileServer.start()
         } else {
             fileServer.stop()
         }
     }
-    
+
     override func viewDidLoad() {
         checkAllBox.delegate = self
         super.viewDidLoad()

@@ -14,7 +14,7 @@ class MovieProgress: UISlider {
         video = v
         super.init(frame: .zero)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }

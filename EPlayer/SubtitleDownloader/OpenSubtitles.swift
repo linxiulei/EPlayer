@@ -24,25 +24,25 @@ class OpenSubtitleSubinfo: Subinfo {
         _link = link
         _ext = ext
     }
-    
+
     override var ext: String {
         get {
             return _ext
         }
     }
-    
+
     override var langs: [String] {
         get {
             return [_lang]
         }
     }
-    
+
     override var link: String {
         get {
             return _link
         }
     }
-    
+
     override var data: Data? {
         get {
             return try! _data!.gunzipped()
@@ -54,29 +54,29 @@ class OpenSubtitleSubinfo: Subinfo {
 
 class OpenSubtitlesAPI: DownloaderAPI {
     var apiURL = "https://api.opensubtitles.org/xml-rpc"
-    
+
     func getFileHash(_ filepath: String) -> String {
         guard let fh = FileHandle(forReadingAtPath: filepath) else {
             os_log("error in open file %@", type: .error, filepath)
             return ""
         }
-        
+
         let fileSize = fh.seekToEndOfFile()
-        
+
         let offsets = [4096, fileSize / 3 * 2, fileSize / 3, fileSize - 8192]
         let readLength = 4096
-        
+
         var ret = [String]()
         for offset in offsets {
             fh.seek(toFileOffset: offset)
             let d = fh.readData(ofLength: readLength)
             ret.append(d.getMD5())
         }
-        
+
         return ret.joined(separator: ":")
     }
-    
-    
+
+
     func logIn(_ mg: MovieGuesser, _ lang: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
         let params: [Any] = ["", "", "en", "TemporaryUserAgent"]
         AlamofireXMLRPC.request(apiURL, methodName: "LogIn", parameters: params).responseXMLRPC { (response: DataResponse<XMLRPCNode>) -> Void in
@@ -87,10 +87,10 @@ class OpenSubtitlesAPI: DownloaderAPI {
                 case .failure:
                     print("failure")
             }
-            
+
         }
     }
-    
+
     func searchSubtitles(_ mg: MovieGuesser, _ token: String, _ lang: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
         var query: [String: Any]
         if (mg.episode != nil) {
@@ -111,7 +111,7 @@ class OpenSubtitlesAPI: DownloaderAPI {
                 }
                 let num = subtitleList.count
                 os_log("%d subtitles of %s found in Opensubtitles", type: .info, num, lang)
-                
+
                 var subinfoList = [Subinfo]()
                 for subtitle in subtitleList {
                     let link = subtitle["SubDownloadLink"].string
@@ -120,7 +120,7 @@ class OpenSubtitlesAPI: DownloaderAPI {
                     let subinfo = OpenSubtitleSubinfo(link!, ext!, lang: lang)
                     subinfoList.append(subinfo)
                 }
-    
+
                 for subinfo in subinfoList {
                     subinfo.download(closure: closure)
                 }
@@ -130,7 +130,7 @@ class OpenSubtitlesAPI: DownloaderAPI {
             }
         }
     }
-    
+
     override func downloadSubtitles(_ videoFilePath: String,
                                     _ lang: String,
                                     closure: @escaping (_ subinfo: Subinfo) -> Void) {
