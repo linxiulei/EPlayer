@@ -338,6 +338,11 @@ class MovieFileManager {
         }
     }
     
+    func writeFile(_ filename: String, _ data: Data) {
+        let fileUrl = documentsURL.appendingPathComponent(filename)
+        try! data.write(to: fileUrl)
+    }
+    
     func getFileCount() -> Int {
         return movieFiles.count
     }
