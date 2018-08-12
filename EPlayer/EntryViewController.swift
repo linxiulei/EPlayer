@@ -24,6 +24,8 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
     var fileListView: FileListViewController?
     var deleteActive: Bool = false
     var checkAll: Bool = false
+    var fileServer: FileServer! = nil
+    var fileServerActived = false
     
     @IBOutlet weak var fileBtn: UIButton!
     @IBOutlet weak var wifiBtn: UIButton!
@@ -76,6 +78,17 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
     }
     
     @IBAction func clickWifi(_ sender: UIButton, forEvent event: UIEvent) {
+        if fileServer == nil {
+            fileServer = getFileServer(fileListView!.movieFileManager)
+        }
+        
+        fileServerActived = !fileServerActived
+        
+        if fileServerActived {
+            fileServer.start()
+        } else {
+            fileServer.stop()
+        }
     }
     
     override func viewDidLoad() {
