@@ -343,6 +343,18 @@ class MovieFileManager {
         try! data.write(to: fileUrl)
     }
     
+    func getFileHandle(_ filename: String) -> FileHandle {
+        let filepath = documentsURL.appendingPathComponent(filename).path
+
+        return FileHandle(forWritingAtPath: filepath)!
+    }
+    
+    func createFile(_ filename: String, _ recreate: Bool) {
+        let filepath = documentsURL.appendingPathComponent(filename).path
+        try? FileManager.default.removeItem(atPath: filepath)
+        FileManager.default.createFile(atPath: filepath, contents: nil, attributes: nil)
+    }
+    
     func getFileCount() -> Int {
         return movieFiles.count
     }
