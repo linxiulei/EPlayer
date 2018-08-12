@@ -63,10 +63,10 @@ class FileServer {
     var movieFileManager: MovieFileManager
     var handlers: [String : ((_ environ: [String: Any], _ closure: @escaping (HTTPResponse) -> Void) -> Void)] = [:]
 
-    init(_ fileManager: MovieFileManager) {
+    init(_ fileManager: MovieFileManager, _ bind: String, _ port: Int) {
         movieFileManager = fileManager
         loop = try! SelectorEventLoop(selector: try! KqueueSelector())
-        server = DefaultHTTPServer(eventLoop: loop, interface: "0.0.0.0", port: 8080) {
+        server = DefaultHTTPServer(eventLoop: loop, interface: bind, port: port) {
             (
             environ: [String: Any],
             startResponse: @escaping ((String, [(String, String)]) -> Void),
@@ -199,8 +199,8 @@ class FileServer {
     }
 }
 
-func getFileServer(_ fileManager: MovieFileManager) -> FileServer {
-    let f = FileServer(fileManager)
+func getFileServer(_ fileManager: MovieFileManager, _ bind: String, _ port: Int) -> FileServer {
+    let f = FileServer(fileManager, bind, port)
     f.registerHandler("/", f.indexHandler)
     f.registerHandler("/upload", f.postFileHandler)
     return f

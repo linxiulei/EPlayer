@@ -9,6 +9,7 @@
 import os.log
 import Foundation
 import BEMCheckBox
+import FGRoute
 
 class EntryViewController: UIViewController {
     override func viewDidLoad() {
@@ -27,6 +28,7 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
     var fileServer: FileServer! = nil
     var fileServerActived = false
     
+    @IBOutlet weak var wifiActiveLabel: UILabel!
     @IBOutlet weak var fileBtn: UIButton!
     @IBOutlet weak var wifiBtn: UIButton!
     @IBOutlet weak var checkAllBox: BEMCheckBox!
@@ -78,11 +80,21 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
     }
     
     @IBAction func clickWifi(_ sender: UIButton, forEvent event: UIEvent) {
+        let port = 8080
         if fileServer == nil {
-            fileServer = getFileServer(fileListView!.movieFileManager)
+            fileServer = getFileServer(fileListView!.movieFileManager, "0.0.0.0", port)
         }
         
         fileServerActived = !fileServerActived
+        
+        if fileServerActived {
+            guard let ipaddress = FGRoute.getIPAddress() else {
+                fileServerActived = false
+                return
+            }
+            
+            wifiActiveLabel.text = "http://\(ipaddress):\(port)/"
+        }
         
         if fileServerActived {
             fileServer.start()
