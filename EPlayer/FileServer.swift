@@ -165,26 +165,25 @@ class FileServer {
         let parser = MultiPartParser(boundary!)
 
         let input = environ["swsgi.input"] as! SWSGIInput
-        var buf: Data
 
-        var filename: String = ""
+        var fileHandle: FileHandle! = nil
         input { data in
             let results = parser.feed(data)
 
             for r in results {
                 if r.d.count > 0 {
-                    if filename == "" {
+                    if fileHandle == nil {
                         print("ERROR FileServer")
                     }
-
-                    self.movieFileManager.writeFile(filename, r.d)
-                    //os_log("%@\n", String(bytes: r.d, encoding: String.Encoding.utf8)!)
+                    fileHandle.write(r.d)
                 }
 
                 if r.headers.count > 0 {
                     for header in r.headers {
                         if header.0 == "Content-Disposition" {
-                            filename = getHeaderFilename(header.1)
+                            let filename = getHeaderFilename(header.1)
+                            self.movieFileManager.createFile(filename, true)
+                            fileHandle = self.movieFileManager.getFileHandle(filename)
                         }
                     }
                 }
@@ -223,8 +222,7 @@ class MultiPartParser {
         repeat {
             lastLeftover = self._leftover
             let result = getNext(self._leftover)
-            //os_log("%@\n", String(bytes: result.d, encoding: String.Encoding.utf8)!)
-
+            
             if result.d.count > 0 || result.headers.count > 0 {
                 r.append((result.d, result.headers))
             }
@@ -237,6 +235,8 @@ class MultiPartParser {
 
     func getNext(_ data: Data) -> (d: Data, headers: [(String, String)], leftover: Data) {
         let b = "--" + self.boundary + "\r\n"
+        let end = "--" + self.boundary + "--\r\n"
+        
         let fullData = data
         var leftover = Data()
 
@@ -256,13 +256,23 @@ class MultiPartParser {
         }
 
         guard let range = str.range(of: b) else {
+            if str.range(of: end) != nil {
+                let d = fullData.subdata(in: 0..<(fullData.count - end.count - 2))
+                return (d, [], Data())
+            }
             let d = fullData.subdata(in: 0..<(fullData.count - b.count))
             leftover = fullData.subdata(in: (fullData.count - b.count)..<fullData.count)
             return (d, [], leftover)
         }
-
-        let d = fullData[..<(range.lowerBound.encodedOffset)]
+        
+        // len(CRLF) == 2
+        var dataEnd = range.lowerBound.encodedOffset
+        if range.lowerBound.encodedOffset > 0 {
+            dataEnd -= 2
+        }
+        let d = fullData[..<dataEnd]
         leftover = fullData[(range.lowerBound.encodedOffset + b.count + 1)..<fullData.count]
+
 
         headerParser = HTTPHeaderParser()
         return (d, [], leftover)
@@ -273,7 +283,6 @@ class MultiPartParser {
         if headerParser == nil {
             return ([], leftover)
         }
-        let str = String(data: data, encoding: String.Encoding.utf8)!
         var elements: [HTTPHeaderParser.Element] = []
         elements += headerParser.feed(data)
 

@@ -509,6 +509,15 @@
                                     <action selector="clickRefresh:" destination="8nL-JV-DIM" eventType="touchUpInside" id="nMX-3Y-8ez"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VgA-Tq-hey">
+                                <rect key="frame" x="312" y="19.5" width="400" height="0.0"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="400" id="LfA-Nv-aDR"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kTj-ZG-nBw">
                                 <rect key="frame" x="944" y="5" width="50" height="30"/>
                                 <constraints>
@@ -522,8 +531,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="VgA-Tq-hey" firstAttribute="centerX" secondItem="vXU-I4-uci" secondAttribute="centerX" id="1Tz-mP-0jN"/>
                             <constraint firstItem="kTj-ZG-nBw" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="4Xv-gx-n2l"/>
                             <constraint firstItem="lV7-vS-YMy" firstAttribute="trailing" secondItem="kTj-ZG-nBw" secondAttribute="trailing" constant="30" id="6DZ-Uc-R25"/>
+                            <constraint firstItem="VgA-Tq-hey" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="Nul-5V-Lsw"/>
                             <constraint firstItem="uWI-e3-KgF" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="TpS-y9-iqR"/>
                             <constraint firstItem="kTj-ZG-nBw" firstAttribute="leading" secondItem="uWI-e3-KgF" secondAttribute="trailing" constant="20" id="aoN-23-dU0"/>
                             <constraint firstItem="mTF-mQ-dRy" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="e3W-Hf-GCB"/>
@@ -537,6 +548,7 @@
                         <outlet property="checkAllBox" destination="mTF-mQ-dRy" id="l1Q-g6-RFZ"/>
                         <outlet property="checkAllBoxWidth" destination="dxk-lw-QDT" id="pRN-0j-1FQ"/>
                         <outlet property="fileBtn" destination="kTj-ZG-nBw" id="1db-2C-46I"/>
+                        <outlet property="wifiActiveLabel" destination="VgA-Tq-hey" id="WGF-7m-zzY"/>
                         <outlet property="wifiBtn" destination="kDj-Sg-mOS" id="U3y-C0-218"/>
                     </connections>
                 </viewController>
