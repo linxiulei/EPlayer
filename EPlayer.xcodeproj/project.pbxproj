@@ -904,6 +904,11 @@
 					D915D110205BBBFF000BE745 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
 					};
 					D915D124205BBBFF000BE745 = {
 						CreatedOnToolsVersion = 9.2;

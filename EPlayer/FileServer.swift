@@ -136,6 +136,33 @@ class FileServer {
         closure(r)
     }
 
+    func postFileAPIHandler (_ environ: [String: Any], _ closure: @escaping (HTTPResponse) -> Void) -> Void {
+        let r = HTTPResponse(200, Data("OK".utf8))
+        let filenameQuery = environ["QUERY_STRING"] as? String
+
+        let queries = filenameQuery!.components(separatedBy: "&")
+        var filename = ""
+        for q in queries {
+            let queryFields = q.components(separatedBy: "=")
+            if queryFields[0] == "filename" {
+                filename = queryFields[1]
+            }
+        }
+        guard filename != "" else {
+            closure(HTTPResponse(404, Data("filename not provided".utf8)))
+            return
+        }
+        self.movieFileManager.createFile(filename, true)
+        let fileHandle = self.movieFileManager.getFileHandle(filename)
+        let input = environ["swsgi.input"] as! SWSGIInput
+        input { data in
+            if data.count == 0 {
+                closure(r)
+            }
+            fileHandle.write(data)
+        }
+    }
+
     func postFileHandler(_ environ: [String: Any], _ closure: @escaping (HTTPResponse) -> Void) -> Void {
         let r = HTTPResponse(200)
 
@@ -161,13 +188,15 @@ class FileServer {
             closure(HTTPResponse(404))
             return
         }
+        
+        let input = environ["swsgi.input"] as! SWSGIInput
 
         let parser = MultiPartParser(boundary!)
 
-        let input = environ["swsgi.input"] as! SWSGIInput
 
         var fileHandle: FileHandle! = nil
         input { data in
+            //os_log("%@", String(data: data, encoding: String.Encoding.utf8)!)
             let results = parser.feed(data)
 
             for r in results {
@@ -202,6 +231,7 @@ func getFileServer(_ fileManager: MovieFileManager, _ bind: String, _ port: Int)
     let f = FileServer(fileManager, bind, port)
     f.registerHandler("/", f.indexHandler)
     f.registerHandler("/upload", f.postFileHandler)
+    f.registerHandler("/api/upload", f.postFileAPIHandler)
     return f
 }
 
@@ -239,6 +269,7 @@ class MultiPartParser {
 
         let fullData = data
         var leftover = Data()
+        var d = Data()
 
         if fullData.count < b.count {
             return (Data(), [], fullData)
@@ -257,9 +288,10 @@ class MultiPartParser {
 
         guard let range = str.range(of: b) else {
             if str.range(of: end) != nil {
-                let d = fullData.subdata(in: 0..<(fullData.count - end.count - 2))
+                d = fullData.subdata(in: 0..<(fullData.count - end.count - 2))
                 return (d, [], Data())
             }
+
             let d = fullData.subdata(in: 0..<(fullData.count - b.count))
             leftover = fullData.subdata(in: (fullData.count - b.count)..<fullData.count)
             return (d, [], leftover)
@@ -270,7 +302,7 @@ class MultiPartParser {
         if range.lowerBound.encodedOffset > 0 {
             dataEnd -= 2
         }
-        let d = fullData[..<dataEnd]
+        d = fullData[..<dataEnd]
         leftover = fullData[(range.lowerBound.encodedOffset + b.count + 1)..<fullData.count]
 
 
@@ -321,6 +353,14 @@ extension String {
             }
         }
         return String(suffix(from: index(startIndex, offsetBy: firstNoneSpace)))
+    }
+
+    func find(_ subStr: String) -> Int {
+        let re = try! NSRegularExpression(pattern: subStr)
+        guard let match = re.firstMatch(in: self, range: NSMakeRange(0, self.count)) else {
+            return -1
+        }
+        return match.range.location
     }
 }
 

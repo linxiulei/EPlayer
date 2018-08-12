@@ -31,7 +31,7 @@ public final class Transport {
     }
 
     /// Size for recv
-    static let recvChunkSize = 1024
+    static let recvChunkSize = 1024 * 64
 
     /// Is this transport closed or not
     private(set) var closed: Bool = false
