@@ -202,7 +202,11 @@ class MovieFile {
     var path: String
     var url: URL
     var progress = 0
-    let VIDEO_SUFFIX = ["mkv", "mp4", "avi"]
+    // https://en.wikipedia.org/wiki/Video_file_format
+    let VIDEO_SUFFIX = [
+        "mkv", "mp4", "avi", "mpg", "wmv",
+        "mov", "flv", "rmvb", "rm", "3pg"
+    ]
     let SUBTITLE_SUFFIX = ["ass", "ssa", "srt"]
 
     init(_ path: String, _ url: URL) {
@@ -211,13 +215,14 @@ class MovieFile {
     }
 
     func getCategory() -> FileCategory {
-        if VIDEO_SUFFIX.contains(url.pathExtension) {
+        if VIDEO_SUFFIX.contains(url.pathExtension.lowercased()) {
             return FileCategory.Movie
         }
 
-        if SUBTITLE_SUFFIX.contains(url.pathExtension) {
+        if SUBTITLE_SUFFIX.contains(url.pathExtension.lowercased()) {
             return FileCategory.Subtitle
         }
+
         if isDir() {
             return FileCategory.Directory
         }
