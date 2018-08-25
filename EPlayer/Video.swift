@@ -23,6 +23,8 @@ let CVPIX_FMT = kCVPixelFormatType_32BGRA
 
 let AUDIO_FMT_CONVERT_TO = AV_SAMPLE_FMT_S16
 
+let ALIGN = Int32(32)
+
 //let FMT_CONVERT_TO = AV_PIX_FMT_UYVY422
 
 //let FMT_CONVERT_TO = AV_PIX_FMT_YUV420P
@@ -750,7 +752,7 @@ class Video {
             //let c = Date().timeIntervalSince1970
             //os_log("getting sws scale uses %f", type: .debug, c - b)
 
-            let size = av_image_get_buffer_size(FMT_CONVERT_TO, width, height, 1)
+            let size = av_image_get_buffer_size(FMT_CONVERT_TO, width, height, ALIGN)
 
             let srcFrame = pFrameRGB
             let linesizeCast = withUnsafeMutablePointer(to: &srcFrame!.pointee.linesize.0){$0}
@@ -765,7 +767,7 @@ class Video {
                 UnsafePointer<UInt8>(srcFrame!.pointee.data.7),
                 ]
 
-            av_image_copy_to_buffer(cast, size, targetData, linesizeCast, FMT_CONVERT_TO, width, height, 1)
+            av_image_copy_to_buffer(cast, size, targetData, linesizeCast, FMT_CONVERT_TO, width, height, ALIGN)
 
             CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags.readOnly)
 
@@ -1277,7 +1279,7 @@ class Video {
         ret = av_image_alloc(datasizePointer,
                              linesizePointer,
                              width, height,
-                             FMT_CONVERT_TO, 1)
+                             FMT_CONVERT_TO, ALIGN)
 
         if (isErr(ret, "avImageFillArrays")) {
             return ret
