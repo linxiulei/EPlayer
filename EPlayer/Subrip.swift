@@ -59,6 +59,9 @@ class Subrip {
 
             } else if (se.pts == -1) {
                 let components = line.components(separatedBy: " --> ")
+                if (components.count != 2) {
+                    throw SubtitleError.Invalid(msg: "components of split line " + line + " is not valid")
+                }
                 let ptsStr0 = components[0]
                 let ptsStr1 = components[1]
                 let pts0 = dateFormatter.date(from: "1970-01-01 " + ptsStr0)
