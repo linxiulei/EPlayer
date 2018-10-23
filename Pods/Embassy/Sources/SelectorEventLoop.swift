@@ -48,6 +48,10 @@ public final class SelectorEventLoop: EventLoop {
         IOUtils.setBlocking(fileDescriptor: pipeReceiver, blocking: false)
         // subscribe to pipe receiver read-ready event, do nothing, just allow selector
         // to be interrupted
+        
+        // Notice: we use a local copy of pipeReceiver to avoid referencing self
+        // here, thus we won't have reference cycle problem
+        let localPipeReceiver = pipeReceiver
         setReader(pipeReceiver) {
             // consume the pipe receiver, so that it won't keep triggering read event
             let size = PIPE_BUF
@@ -55,7 +59,7 @@ public final class SelectorEventLoop: EventLoop {
             var readSize = 1
             while readSize > 0 {
                 readSize = bytes.withUnsafeMutableBytes { pointer in
-                    return SystemLibrary.read(self.pipeReceiver, pointer, Int(size))
+                    return SystemLibrary.read(localPipeReceiver, pointer, Int(size))
                 }
             }
         }
@@ -177,8 +181,9 @@ public final class SelectorEventLoop: EventLoop {
     // interrupt the selector
     private func interruptSelector() {
         let byte = [UInt8](repeating: 0, count: 1)
+        let rc = write(pipeSender, byte, byte.count)
         assert(
-            write(pipeSender, byte, byte.count) >= 0,
+            rc >= 0,
             "Failed to interrupt selector, errno=\(errno), message=\(lastErrorDescription())"
         )
     }
