@@ -23,8 +23,8 @@ let CVPIX_FMT = kCVPixelFormatType_32BGRA
 
 let AUDIO_FMT_CONVERT_TO = AV_SAMPLE_FMT_S16
 
-let ALIGN = Int32(32)
-
+let ALIGN = Int32(64)
+let CODEC_HWAccel = [AV_CODEC_ID_H263, AV_CODEC_ID_H264]
 //let FMT_CONVERT_TO = AV_PIX_FMT_UYVY422
 
 //let FMT_CONVERT_TO = AV_PIX_FMT_YUV420P
@@ -1217,7 +1217,7 @@ class Video {
             return ret
         }
 
-        if (pCodecCtx?.pointee.codec_id == AV_CODEC_ID_MPEG4) {
+        if (!CODEC_HWAccel.contains(pCodecCtx!.pointee.codec_id)) {
             /*
              * "divx style packed b frames" troubles videotoolbox,
              * though not all Divx got packed b frames, we don't
