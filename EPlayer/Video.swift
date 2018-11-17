@@ -1168,7 +1168,7 @@ class Video {
         }
 
 
-        let bufferSize = UInt32(1024 * 256)
+        let bufferSize = UInt32(1024 * 256 * 2)
         for _ in 0..<self.audioQueueNum {
             var bufferRef: AudioQueueBufferRef? = AudioQueueBufferRef.allocate(capacity: 1)
             status = AudioQueueAllocateBuffer(outputQueue!, bufferSize, &bufferRef)
