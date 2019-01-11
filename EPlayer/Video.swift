@@ -942,6 +942,11 @@ class Video {
             let assLine = String.init(cString: r.ass)
             ass_process_data(assTrack, r.ass, Int32(assLine.count))
             let track = assTrack?.pointee
+            if track!.n_events < 1 {
+                print("failed to process ass line \(assLine)")
+                continue
+            }
+
             let eventIndex = track!.n_events - 1
             let event = track?.events[Int(eventIndex)]
             text += String.init(cString: event!.Text)

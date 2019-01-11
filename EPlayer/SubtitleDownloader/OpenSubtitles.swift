@@ -83,6 +83,10 @@ class OpenSubtitlesAPI: DownloaderAPI {
             switch response.result {
                 case .success(let value):
                     let token = value[0]["token"].string
+                    if (token == nil) {
+                        print("OpenSubtitle LogIn API failed")
+                        return
+                    }
                     self.searchSubtitles(mg, token!, lang, closure: closure)
                 case .failure:
                     print("failure")
