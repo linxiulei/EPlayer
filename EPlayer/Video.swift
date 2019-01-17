@@ -934,6 +934,10 @@ class Video {
     func getSubFrameText(_ subframe: AVSubtitle) -> String {
         var text = ""
         let num = subframe.num_rects
+        // It's an invalid subtitle frame
+        if (num < 1) {
+            return ""
+        }
         for i in 0...num - 1 {
             let r = subframe.rects[Int(i)]!.pointee
             if (r.ass == nil) {
