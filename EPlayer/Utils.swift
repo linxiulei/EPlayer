@@ -185,20 +185,25 @@ func renderAssLine(_ line: String) -> String {
     return plainText
 }
 
-func renderSubripLine(_ line: String) -> String {
-    var plainText = ""
-    do {
-        let regex = try NSRegularExpression(pattern: "\\<.+?\\>", options: [])
-        plainText = regex.stringByReplacingMatches(
-            in: line,
-            options: [],
-            range: NSMakeRange(0, line.count),
-            withTemplate: "")
-    } catch {
-        print(error)
+func getAssTag(_ line: String) -> String {
+    let regex1 = try! NSRegularExpression(pattern: "\\{.*\\\\an[0-9].*\\}", options: .caseInsensitive)
+
+    var match = regex1.firstMatch(in: line, options: [], range: NSMakeRange(0, line.count))
+    if (match == nil) {
+        let regex2 = try! NSRegularExpression(pattern: "\\{.*\\\\pos.*\\}", options: .caseInsensitive)
+        match = regex2.firstMatch(in: line, options: [], range: NSMakeRange(0, line.count))
     }
-    return plainText
+
+    if (match == nil) {
+        return ""
+    }
+
+    let r = Range(match!.range, in: line)!
+    let lowerBound = String.Index.init(encodedOffset: r.lowerBound.encodedOffset + 2)
+    let upperBound = String.Index.init(encodedOffset: r.lowerBound.encodedOffset + 2 + 3)
+    return String(line[lowerBound..<upperBound])
 }
+
 
 let VIDEO_SUFFIX = ["mkv", "mp4", "avi"]
 

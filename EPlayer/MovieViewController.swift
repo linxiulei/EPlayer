@@ -71,6 +71,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet var singleTap: UITapGestureRecognizer!
     @IBOutlet var doubleTap: UITapGestureRecognizer!
 
+    @IBOutlet weak var sideSubtitleView: UILabel!
     @IBOutlet weak var panelContainerView: UIView!
     @IBOutlet weak var filenameLabel: UILabel!
     @IBOutlet weak var notifyLabel: UILabel!
@@ -117,6 +118,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
                           view: movieView,
                           sView: subtitleView,
                           pView: paraLabel,
+                          ssView: sideSubtitleView,
                           dict: epdict,
                           alayer: layer!)
             moviePanelController?.reload()
@@ -161,6 +163,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
                           view: movieView,
                           sView: subtitleView,
                           pView: paraLabel,
+                          ssView: sideSubtitleView,
                           dict: epdict,
                           alayer: layer!)
             moviePanelController?.reload()
@@ -315,6 +318,7 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
             view: movieView,
             sView: subtitleView,
             pView: paraLabel,
+            ssView: sideSubtitleView,
             dict: epdict,
             alayer: layer!
             ) else {

@@ -136,6 +136,7 @@ class Video {
     var displayView: UIImageView
     var subtitleView: UILabel
     var paraView: UILabel
+    var sideSubtitleView: UILabel
 
     let myShadow = NSShadow()
     var decodeThreadIsStopped = true
@@ -146,6 +147,7 @@ class Video {
     var lastImage: UIImage?
     var lastAT: NSAttributedString?
     var lastPara: NSAttributedString?
+    var lastSideSubtitle: NSAttributedString?
 
     var mdict: EPDictionary?
     var subtitleManager = SubtitleManager()
@@ -162,12 +164,13 @@ class Video {
         var usingHWAccel = true
     #endif
     var videoIsEOF = false
-    init?(path: String, view: UIImageView, sView: UILabel, pView: UILabel, dict: EPDictionary?, alayer: AVSampleBufferDisplayLayer) {
+    init?(path: String, view: UIImageView, sView: UILabel, pView: UILabel, ssView: UILabel, dict: EPDictionary?, alayer: AVSampleBufferDisplayLayer) {
         let a = Date().timeIntervalSince1970
         mdict = dict
         displayView = view
         subtitleView = sView
         paraView = pView
+        sideSubtitleView = ssView
         layer = alayer
 
 
@@ -672,25 +675,55 @@ class Video {
         if (lastAT != nil) {
             subtitleView.attributedText = lastAT
         }
-
-        var subtitle: Subtitle?
-        if (subtitleName != nil) {
-            subtitle = getSubtitle(subtitleName!, getMasterClock() + subtitleOffset)
+        if (lastPara != nil) {
+            sideSubtitleView.attributedText = lastSideSubtitle
         }
-        if (subtitle == nil) {
-            lastPara = NSAttributedString(string: "",
-                                          attributes: paraAttr)
 
-            lastAT = NSAttributedString(string: "",
-                                        attributes: subtitleAttr)
-
-        } else {
-            lastPara = NSAttributedString(string: subtitle!.pText,
-                                          attributes: paraAttr)
-
-            lastAT = NSAttributedString(string: subtitle!.text,
-                                        attributes: subtitleAttr)
+        guard let subtitleName = subtitleName else {
+            _clearSubtitles()
+            return
         }
+
+        guard let subtitles = getSubtitles(subtitleName, getMasterClock() + subtitleOffset) else {
+            _clearSubtitles()
+            return
+        }
+
+        if (subtitles.count == 0) {
+            _clearSubtitles()
+            return
+
+        }
+
+        var noTag = true
+        for sub in subtitles {
+            if sub.tag != "" {
+                lastSideSubtitle = NSAttributedString(string: sub.text,
+                                                      attributes: paraAttr)
+                noTag = false
+            } else {
+                lastPara = NSAttributedString(string: sub.pText,
+                                              attributes: paraAttr)
+
+                lastAT = NSAttributedString(string: sub.text,
+                                            attributes: subtitleAttr)
+            }
+        }
+        if (noTag) {
+            lastSideSubtitle = NSAttributedString(string: "",
+                                                  attributes: paraAttr)
+        }
+    }
+
+    func _clearSubtitles() {
+        lastSideSubtitle = NSAttributedString(string: "",
+                                              attributes: paraAttr)
+
+        lastPara = NSAttributedString(string: "",
+                                      attributes: paraAttr)
+
+        lastAT = NSAttributedString(string: "",
+                                    attributes: subtitleAttr)
     }
 
     func displayLayer() {
@@ -958,14 +991,14 @@ class Video {
         return text
     }
 
-    func getSubtitle(_ subtitleName: String?, _ pts: Int64) -> Subtitle? {
+    func getSubtitles(_ subtitleName: String?, _ pts: Int64) -> [Subtitle]? {
         if (subtitleName == nil) {
             return nil
         }
 
-        let subtitle = subtitleManager.getSubtitle(subtitleName!, pts)
-        if (subtitle != nil) {
-            return subtitle
+        let subtitles = subtitleManager.getSubtitles(subtitleName!, pts)
+        if (subtitles != nil && subtitles!.count != 0) {
+            return subtitles
         }
 
         if (subtitleName?.hasPrefix("builtin") == false) {
@@ -1002,7 +1035,7 @@ class Video {
             Int64(subframe!.end_display_time))
 
         avsubtitle_free(&subframe!)
-        return subtitleManager.getSubtitle(subtitleName!, pts)
+        return subtitleManager.getSubtitles(subtitleName!, pts)
     }
 
     func decodeSubtitle() -> [UnsafeMutablePointer<ASS_Image>] {
@@ -1443,6 +1476,7 @@ class Video {
         ff_draw_init(&draw, AV_PIX_FMT_YUV420P, 0)
     }
 
+    /*
     func genNextImage() {
         var ret: Int32
 
@@ -1454,7 +1488,7 @@ class Video {
         lastVideoPTS = frame!.pointee.best_effort_timestamp
         _ = syncVideoClock(lastVideoPTS)
 
-        let subtitle = getSubtitle(subtitleName, frame!.pointee.best_effort_timestamp)
+        let subtitles = getSubtitles(subtitleName, frame!.pointee.best_effort_timestamp)
 
         ret = swsScale(option: sws_ctx,
                        source: frame!,
@@ -1510,7 +1544,7 @@ class Video {
         lastPara = NSAttributedString(string: subPText,
                                       attributes: paraAttr)
 
-    }
+    }*/
 }
 
 

@@ -16,7 +16,13 @@ enum SubtitleError: Error {
     case Invalid(msg: String)
 }
 
+let regex1 = try! NSRegularExpression(pattern: "\\<.+?\\>", options: [])
+let regex2 = try! NSRegularExpression(pattern: "\\{.+?\\}", options: [])
+
 class Subrip {
+
+    let stripREs = [regex1, regex2]
+
     var events = [SubEvent]()
     func initWithData (_ data: Data) throws {
         guard let encoding = detectEncoding(data) else {
@@ -76,6 +82,11 @@ class Subrip {
                 se.duration = Int64((pts1!.timeIntervalSince1970 - pts0!.timeIntervalSince1970) * 1000.0)
             } else {
                 se.text += renderSubripLine(line + "\n")
+                se.tag = getAssTag(String(line))
+                if se.tag != "" {
+                    print(se.pts)
+                    print(se.tag)
+                }
             }
         }
     }
@@ -106,6 +117,18 @@ class Subrip {
             os_log("Subrip: Unexpected Error %@", error.localizedDescription)
         }
     }
+
+    func renderSubripLine(_ line: String) -> String {
+        var plainText = line
+        for regex in stripREs {
+            plainText = regex.stringByReplacingMatches(
+                in: plainText,
+                options: [],
+                range: NSMakeRange(0, plainText.count),
+                withTemplate: "")
+        }
+        return plainText
+    }
 }
 
 class SubEvent {
@@ -113,17 +136,20 @@ class SubEvent {
     var pts: Int64
     var duration: Int64
     var text: String
+    var tag: String
     init () {
         serial = -1
         self.pts = -1
         self.duration = -1
         self.text = ""
+        self.tag = ""
     }
 
-    init(_ s: Int64, _ pts: Int64, _ duration: Int64, _ text: String) {
+    init(_ s: Int64, _ pts: Int64, _ duration: Int64, _ text: String, _ tag: String) {
         serial = s
         self.pts = pts
         self.duration = duration
         self.text = text
+        self.tag = tag
     }
 }

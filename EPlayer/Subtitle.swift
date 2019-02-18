@@ -73,7 +73,7 @@ class SubtitleManager {
         }
     }
 
-    func getSubtitle(_ subtitleName: String, _ pts: Int64) -> Subtitle? {
+    func getSubtitles(_ subtitleName: String, _ pts: Int64) -> [Subtitle]? {
         let stream = subtitleStreams[subtitleName]
         if (stream == nil) {
             return nil
@@ -119,8 +119,8 @@ class SubtitleManager {
 
 class SubtitleStream {
     var subtitleName: String
-    var subtitles = [Int64: Subtitle]()
-    var lastSutitle: Subtitle?
+    var subtitles = [Int64: [Subtitle]]()
+    var lastSubtitles: [Subtitle]?
     var assTrack: UnsafeMutablePointer<ASS_Track>?
     var assLibrary : AssLibrary?
     var assRenderer: AssRenderer?
@@ -140,10 +140,11 @@ class SubtitleStream {
         guard let subRip = Subrip(filepath: filepath) else { return nil }
         for e in subRip.events {
             let pts = e.pts
+
             if (mdict == nil) {
-                subtitles[pts] = Subtitle(e.text, "", pts, e.duration)
+                self._addSubtitleEvent(pts, Subtitle(e.text, "", pts, e.duration, e.tag))
             } else {
-                subtitles[pts] = Subtitle(e.text, process(mdict!, e.text), pts, e.duration)
+                _addSubtitleEvent(pts, Subtitle(e.text, process(mdict!, e.text), pts, e.duration, e.tag))
             }
         }
     }
@@ -166,21 +167,43 @@ class SubtitleStream {
             let rawAssText = String.init(cString: event.Text)
             let text = renderAssLine(rawAssText)
             var pText = ""
+            var tag = getAssTag(rawAssText)
+            if (tag != "") {
+                print(tag)
+            }
+            if (event.MarginL != 0 || event.MarginR != 0 || event.MarginV != 0) {
+                tag = "custom"
+            }
             if (mdict != nil) {
                 pText = process(mdict!, text)
             }
-            subtitles[pts] = Subtitle(text, pText, pts, duration)
+            self._addSubtitleEvent(pts, Subtitle(text, pText, pts, duration, tag))
         }
         usingLibass = true
     }
 
-    func getSubtitleByPTS(_ pts: Int64) -> Subtitle? {
+    func getSubtitleByPTS(_ pts: Int64) -> [Subtitle]? {
         if (subtitles[pts] != nil) {
             return subtitles[pts]!
         }
 
-        if (lastSutitle != nil && lastSutitle!.isSuite(pts)) {
-            return lastSutitle
+        var retSubs = [Subtitle]()
+        var retLastSubs = [Subtitle]()
+
+        if (lastSubtitles != nil && lastSubtitles?.count != 0) {
+            var suite = false
+            for i in lastSubtitles! {
+                if (i.isSuite(pts)) {
+                    if (i.tag == "") {
+                        suite = true
+                    }
+                    retLastSubs.append(i)
+                }
+            }
+
+            if (suite) {
+                return retLastSubs
+            }
         }
 
         // if we got a subtitle beforehand, it assumes that
@@ -192,15 +215,23 @@ class SubtitleStream {
             return Subtitle()
         }
  */
-
-        for (_, sub) in subtitles {
-            if (sub.pts < pts && (sub.pts + sub.duration) > pts) {
-                subtitles[pts] = sub // for cache
-                lastSutitle = sub
-                return sub
+        var cache = false
+        for (_, subs) in subtitles {
+            for sub in subs {
+                if (sub.isSuite(pts)) {
+                    retSubs.append(sub)
+                    if (sub.tag == "") {
+                        // only accelerate subtitles of line
+                        cache = true
+                    }
+                }
             }
         }
-        return nil
+
+        if (cache) {
+            lastSubtitles = retSubs
+        }
+        return retSubs
     }
 
     func addSubtitle(_ text: String,
@@ -208,12 +239,12 @@ class SubtitleStream {
                      _ pts: Int64,
                      _ duration: Int64) {
         let s = Subtitle(text, pText, pts, duration)
-        subtitles[pts] = s
-        lastSutitle = s
+        self._addSubtitleEvent(pts, s)
+        lastSubtitles = [s]
     }
 
     func flush() {
-        lastSutitle = nil
+        lastSubtitles = nil
     }
 
     func hasNextSubtitle(_ pts: Int64, _ num: Int) -> Bool {
@@ -230,6 +261,13 @@ class SubtitleStream {
         }
         return false
     }
+
+    func _addSubtitleEvent(_ pts: Int64, _ subtitle: Subtitle) {
+        if (subtitles[pts] == nil) {
+            subtitles[pts] = [Subtitle]()
+        }
+        subtitles[pts]?.append(subtitle)
+    }
 }
 
 class Subtitle {
@@ -237,13 +275,15 @@ class Subtitle {
     var duration: Int64
     var text: String
     var pText: String
+    var tag: String
     var image: ASS_Image?
 
-    init(_ text: String, _ pText: String, _ pts: Int64, _ duration: Int64) {
+    init(_ text: String, _ pText: String, _ pts: Int64, _ duration: Int64, _ tag: String = "") {
         self.text = text
         self.pText = pText
         self.pts = pts
         self.duration = duration
+        self.tag = tag
     }
 
     init() {
@@ -251,7 +291,7 @@ class Subtitle {
         self.pText = ""
         self.pts = 0
         self.duration = 0
-
+        self.tag = ""
     }
 
     func isSuite(_ pts: Int64) -> Bool {
