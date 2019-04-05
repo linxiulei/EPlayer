@@ -351,14 +351,20 @@ class MovieGuesser {
     var episode: Int32?
 
     init(_ filename: String) {
-        let pattern = "([\\w. ]+)[sS](\\d+)[eE](\\d+).*"
+        /*
+         A few filename examples:
+
+            Silicon.Valley.S01E01.720p.BluRay.x265.ShAaNiG
+            Love, Death & Robots - S01E01 - Sonnie's Edge
+        */
+        let pattern = "([\\w. &,]+)[- ]*[sS](\\d+)[eE](\\d+).*"
 
         let regex = try! NSRegularExpression(pattern: pattern,
                                                  options: [])
         let matches = regex.matches(in: filename, options: [], range: NSMakeRange(0, filename.count))
         if (matches.count > 0) {
             let m = matches[0]
-            movieName = (filename as NSString).substring(with: m.range(at: 1))
+            movieName = (filename as NSString).substring(with: m.range(at: 1)).trimmingCharacters(in: .whitespacesAndNewlines).trimmingCharacters(in: .punctuationCharacters)
             season = Int32((filename as NSString).substring(with: m.range(at: 2)))
             episode = Int32((filename as NSString).substring(with: m.range(at: 3)))
         } else {
