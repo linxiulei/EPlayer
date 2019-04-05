@@ -66,17 +66,20 @@ class Subrip {
             } else if (se.pts == -1) {
                 let components = line.components(separatedBy: " --> ")
                 if (components.count != 2) {
-                    throw SubtitleError.Invalid(msg: "components of split line " + line + " is not valid")
+                    os_log("components of split line %s is not valid", type: .error, line as CVarArg)
+                    errorFlag = true
+                    invalidLines += 1
+                    continue
                 }
                 let ptsStr0 = components[0]
                 let ptsStr1 = components[1]
                 let pts0 = dateFormatter.date(from: "1970-01-01 " + ptsStr0)
                 let pts1 = dateFormatter.date(from: "1970-01-01 " + ptsStr1)
                 if (pts0 == nil) {
-                    throw SubtitleError.Invalid(msg: "timestamp of " + ptsStr0 + " is not valid")
+                    os_log("timestamp of %s is not valid", type: .error, ptsStr0)
                 }
                 if (pts1 == nil) {
-                    throw SubtitleError.Invalid(msg: "timestamp of " + ptsStr1 + " is not valid")
+                    os_log("timestamp of %s is not valid", type: .error, ptsStr1)
                 }
                 se.pts = Int64(pts0!.timeIntervalSince1970 * 1000.0)
                 se.duration = Int64((pts1!.timeIntervalSince1970 - pts0!.timeIntervalSince1970) * 1000.0)

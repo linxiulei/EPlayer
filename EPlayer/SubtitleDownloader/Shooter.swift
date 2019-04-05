@@ -91,6 +91,7 @@ class ShooterAPI: DownloaderAPI {
 
         var ret: [ShooterSubinfo] = []
         urlComponents.percentEncodedQuery = urlComponents.percentEncodedQuery?.replacingOccurrences(of: ":", with: "%3B")
+        print(urlComponents.url)
         URLSession.shared.dataTask(with: urlComponents.url!) { (data, response, error) in
             if error != nil {
                 print("shooter: \(error!.localizedDescription)")

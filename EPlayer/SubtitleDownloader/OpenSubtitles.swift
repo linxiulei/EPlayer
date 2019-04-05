@@ -45,7 +45,7 @@ class OpenSubtitleSubinfo: Subinfo {
 
     override var data: Data? {
         get {
-            return try! _data!.gunzipped()
+            return try? _data!.gunzipped()
         }
     }
 }
@@ -107,6 +107,7 @@ class OpenSubtitlesAPI: DownloaderAPI {
             [query],
             ["limit": 10]
         ]
+        print(apiURL)
         AlamofireXMLRPC.request(apiURL, methodName: "SearchSubtitles", parameters: params).responseXMLRPC { (response: DataResponse<XMLRPCNode>) -> Void in
             switch response.result {
             case .success(let value):
