@@ -186,7 +186,7 @@ func renderAssLine(_ line: String) -> String {
 }
 
 func getAssTag(_ line: String) -> String {
-    let regex1 = try! NSRegularExpression(pattern: "\\{.*\\\\an[0-9].*\\}", options: .caseInsensitive)
+    let regex1 = try! NSRegularExpression(pattern: "\\{.*\\\\an?[0-9].*\\}", options: .caseInsensitive)
 
     var match = regex1.firstMatch(in: line, options: [], range: NSMakeRange(0, line.count))
     if (match == nil) {
