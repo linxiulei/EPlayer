@@ -631,7 +631,7 @@ class Video {
             }
 
         } while ret == -EAGAIN
-
+        
         av_packet_unref(packet!)
         av_packet_free(&packet)
 
@@ -1279,10 +1279,13 @@ class Video {
             pCodecCtx!.pointee.get_format = get_format
             av_opt_set_int(pCodecCtx, "refcounted_frames", 1, 0)
         }
-
-        if isErr(avcodec_open2(pCodecCtx, pCodec, nil), "avcodec_open2 video") {
+        var codec_opts: UnsafeMutablePointer<AVDictionary>? = nil
+        av_dict_set(&codec_opts, "threads", "auto", 0);
+        if isErr(avcodec_open2(pCodecCtx, pCodec, &codec_opts), "avcodec_open2 video") {
+            av_dict_free(&codec_opts)
             return ret
         }
+        av_dict_free(&codec_opts)
 
         width = params.pointee.width
         height = params.pointee.height
@@ -1360,9 +1363,13 @@ class Video {
             return ret
         }
 
-        if isErr(avcodec_open2(aCodecCtx, aCodec, nil), "avcode_open2 audio") {
+        var codec_opts: UnsafeMutablePointer<AVDictionary>? = nil
+        av_dict_set(&codec_opts, "threads", "auto", 0);
+        if isErr(avcodec_open2(aCodecCtx, aCodec, &codec_opts), "avcode_open2 audio") {
+            av_dict_free(&codec_opts)
             return ret
         }
+        av_dict_free(&codec_opts)
         return 0
     }
 
@@ -1442,12 +1449,16 @@ class Video {
 
         sCodecCtx?.pointee.pkt_timebase = sSt!.pointee.time_base
         //let tb = sSt!.pointee.time_base
+        var codec_opts: UnsafeMutablePointer<AVDictionary>? = nil
+        av_dict_set(&codec_opts, "threads", "auto", 0);
         if isErr(avcodec_open2(sCodecCtx,
                                sCodec,
-                               nil),
+                               &codec_opts),
                  "avcode_open2 subtitle") {
+            av_dict_free(&codec_opts)
             return -1
         }
+        av_dict_free(&codec_opts)
 
         assInit(width, height)
 
