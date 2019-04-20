@@ -450,7 +450,7 @@ class Video {
                 let pts = MSTopts(seekTsInMSec, vTimeBase)
                 let masterClock = getMasterClock()
                 var flags: Int32 = 0
-                if (pts < masterClock) {
+                if (pts < MSTopts(masterClock, vTimeBase)) {
                     flags |= AVSEEK_FLAG_BACKWARD
                 }
                 print("move to \(pts), master \(masterClock)")
