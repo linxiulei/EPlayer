@@ -168,8 +168,8 @@ class SubtitleStream {
             let text = renderAssLine(rawAssText)
             var pText = ""
             var tag = getAssTag(rawAssText)
-            if (tag != "") {
-                print(tag)
+            if (tag == "\\p") {
+                continue
             }
             if (event.MarginL != 0 || event.MarginR != 0 || event.MarginV != 0) {
                 tag = "custom"

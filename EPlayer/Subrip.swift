@@ -42,7 +42,10 @@ class Subrip {
         var errorFlag = false
         for line in content.split(separator: "\r\n", omittingEmptySubsequences: false) {
             if (line == "") {
-                events.append(se)
+                if se.tag != "\\p" {
+                    events.append(se)
+                }
+
                 se = SubEvent()
                 errorFlag = false
                 continue

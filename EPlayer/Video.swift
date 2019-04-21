@@ -631,7 +631,7 @@ class Video {
             }
 
         } while ret == -EAGAIN
-        
+
         av_packet_unref(packet!)
         av_packet_free(&packet)
 
@@ -696,10 +696,11 @@ class Video {
         }
 
         var noTag = true
+        var tagText = ""
         for sub in subtitles {
             if sub.tag != "" {
-                lastSideSubtitle = NSAttributedString(string: sub.text,
-                                                      attributes: paraAttr)
+                tagText += "\n" + sub.text
+
                 noTag = false
             } else {
                 lastPara = NSAttributedString(string: sub.pText,
@@ -711,6 +712,9 @@ class Video {
         }
         if (noTag) {
             lastSideSubtitle = NSAttributedString(string: "",
+                                                  attributes: paraAttr)
+        } else {
+            lastSideSubtitle = NSAttributedString(string: tagText,
                                                   attributes: paraAttr)
         }
     }

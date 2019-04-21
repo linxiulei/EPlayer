@@ -185,13 +185,35 @@ func renderAssLine(_ line: String) -> String {
     return plainText
 }
 
-func getAssTag(_ line: String) -> String {
-    let regex1 = try! NSRegularExpression(pattern: "\\{.*\\\\an?[0-9].*\\}", options: .caseInsensitive)
+let posTagRegexes = [
+    try! NSRegularExpression(pattern: "\\{.*\\\\an?[0-9].*\\}", options: .caseInsensitive),
+    try! NSRegularExpression(pattern: "\\{.*\\\\pos.*\\}", options: .caseInsensitive),
+    try! NSRegularExpression(pattern: "\\{.*\\\\move.*\\}", options: .caseInsensitive),
+    try! NSRegularExpression(pattern: "\\{.*\\\\iclip.*\\}", options: .caseInsensitive),
+    try! NSRegularExpression(pattern: "\\{.*\\\\org.*\\}", options: .caseInsensitive),
+    try! NSRegularExpression(pattern: "\\{.*\\\\fade.*\\}", options: .caseInsensitive),
+    try! NSRegularExpression(pattern: "\\{.*\\\\fad.*\\}", options: .caseInsensitive)
+]
 
-    var match = regex1.firstMatch(in: line, options: [], range: NSMakeRange(0, line.count))
-    if (match == nil) {
-        let regex2 = try! NSRegularExpression(pattern: "\\{.*\\\\pos.*\\}", options: .caseInsensitive)
-        match = regex2.firstMatch(in: line, options: [], range: NSMakeRange(0, line.count))
+let posTagBlackRegexes = [
+    try! NSRegularExpression(pattern: "\\{.*\\\\p[0-4].*\\}", options: .caseInsensitive),
+]
+
+func getAssTag(_ line: String) -> String {
+    var match: NSTextCheckingResult?
+
+    for regex in posTagBlackRegexes {
+        match = regex.firstMatch(in: line, options: [], range: NSMakeRange(0, line.count))
+        if (match != nil) {
+            return "\\p"
+        }
+    }
+
+    for regex in posTagRegexes {
+        match = regex.firstMatch(in: line, options: [], range: NSMakeRange(0, line.count))
+        if (match != nil) {
+            break
+        }
     }
 
     if (match == nil) {
