@@ -205,7 +205,8 @@ class MovieFile {
     // https://en.wikipedia.org/wiki/Video_file_format
     let VIDEO_SUFFIX = [
         "mkv", "mp4", "avi", "mpg", "wmv",
-        "mov", "flv", "rmvb", "rm", "3pg"
+        "mov", "flv", "rmvb", "rm", "3pg",
+        "webm"
     ]
     let SUBTITLE_SUFFIX = ["ass", "ssa", "srt"]
 
