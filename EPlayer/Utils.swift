@@ -367,6 +367,13 @@ func detectEncoding(_ data: Data) -> String.Encoding? {
     return encoding
 }
 
+func getAVOpt(_ stream: UnsafeMutablePointer<AVStream>, _ opt: String) -> String? {
+    guard let opt = av_dict_get(stream.pointee.metadata, opt, nil, 0) else {
+        return nil
+    }
+    return String.init(cString: opt.pointee.value)
+}
+
 class MovieGuesser {
     var movieName: String
     var season: Int32?

@@ -66,7 +66,7 @@ class MovieInfoController: UITableViewController {
                 return video.getSubtitleStreamNames().count + 1
             }
         } else if (section == AUDIO_STREAM_SECTION_INDEX) {
-            return 1
+            return video.getAudioStreamNames().count
         }
         return 0
     }
@@ -95,7 +95,8 @@ class MovieInfoController: UITableViewController {
                     cell.textLabel?.text = video.getSubtitleStreamNames()[indexPath.row]
                 }
             } else {
-                cell.textLabel?.text = "Audio Stream \(indexPath.row)"
+                let audioStreamNames = video.getAudioStreamNames()
+                cell.textLabel?.text = "\(audioStreamNames[indexPath.row])"
             }
         }
 
@@ -119,6 +120,13 @@ class MovieInfoController: UITableViewController {
             return
         }
         guard let video = getVideo() else { return }
+
+        if (indexPath.section == AUDIO_STREAM_SECTION_INDEX) {
+            let audioStreamNames = video.getAudioStreamNames()
+            video.setAudioStreamByName(audioStreamNames[indexPath.row])
+            return
+        }
+
         let subtitleStreams = video.getSubtitleStreamNames()
         if (indexPath.row == subtitleStreams.count) {
            rootMovieController?.downloadSubtitles()

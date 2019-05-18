@@ -94,6 +94,7 @@ class Video {
     var audioQueueNum: Int = 2
     var audioFramePerQueue: Int = 4
     var srcChannels: Int32 = 0
+    var aStreamNameIndex = [String: UInt32]()
 
     var sCodec: UnsafeMutablePointer<AVCodec>?
     var sCodecCtx: UnsafeMutablePointer<AVCodecContext>?
@@ -398,6 +399,22 @@ class Video {
         self.setAudioQueue(aq!)
     }
 
+    func getAudioStreamNames() -> [String] {
+        var result = [String]()
+        for k in aStreamNameIndex.keys {
+            result.append(k)
+        }
+        return result
+    }
+
+    func setAudioStreamByName(_ name: String) {
+        guard let index = aStreamNameIndex[name] else {
+            return
+        }
+        audioStream = Int32(index)
+        seekCurrent()
+    }
+
     func getSubtitleStreamNames() -> [String] {
         return subtitleManager.getSubtitleStreamNames()
     }
@@ -537,6 +554,11 @@ class Video {
             }
         }
         decodeThreadIsStopped = true
+    }
+
+    func seekCurrent() {
+        seekReq = true
+        seekTsInMSec = getMasterClock()
     }
 
     func pause() {
@@ -1374,6 +1396,25 @@ class Video {
             return ret
         }
         av_dict_free(&codec_opts)
+
+        for i in 0..<pFormatCtx!.pointee.nb_streams {
+            let stream = pFormatCtx!.pointee.streams![Int(i)]!
+            let par = stream.pointee.codecpar
+            if (par!.pointee.codec_type == AVMEDIA_TYPE_AUDIO) {
+                var lang = getAVOpt(stream, "language")
+                if (lang == nil) {
+                    lang = "unknown"
+                }
+                var title = getAVOpt(stream, "title")
+                if (title == nil) {
+                    title = "noname"
+                }
+
+                let streamName = "\(title!) [\(lang!)]"
+                aStreamNameIndex[streamName] = i
+            }
+        }
+
         return 0
     }
 
