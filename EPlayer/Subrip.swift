@@ -74,15 +74,21 @@ class Subrip {
                     invalidLines += 1
                     continue
                 }
-                let ptsStr0 = components[0]
-                let ptsStr1 = components[1]
+                let ptsStr0 = components[0].trimmingCharacters(in: .whitespaces)
+                let ptsStr1 = components[1].trimmingCharacters(in: .whitespaces)
                 let pts0 = dateFormatter.date(from: "1970-01-01 " + ptsStr0)
                 let pts1 = dateFormatter.date(from: "1970-01-01 " + ptsStr1)
                 if (pts0 == nil) {
                     os_log("timestamp of %s is not valid", type: .error, ptsStr0)
+                    errorFlag = true
+                    invalidLines += 1
+                    continue
                 }
                 if (pts1 == nil) {
                     os_log("timestamp of %s is not valid", type: .error, ptsStr1)
+                    errorFlag = true
+                    invalidLines += 1
+                    continue
                 }
                 se.pts = Int64(pts0!.timeIntervalSince1970 * 1000.0)
                 se.duration = Int64((pts1!.timeIntervalSince1970 - pts0!.timeIntervalSince1970) * 1000.0)
