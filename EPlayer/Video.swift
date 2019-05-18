@@ -102,6 +102,7 @@ class Video {
     var sCurPts: Int64 = 0
     var subtitleName: String?
     var subtitleOffset: Int64 = 0
+    var sStreamNameIndex = [String: UInt32]()
 
     var assLibrary : AssLibrary?
     var assRenderer: AssRenderer?
@@ -420,6 +421,9 @@ class Video {
     }
 
     func setSubtitleStreamByName(_ name: String) {
+        if let index = sStreamNameIndex[name] {
+            subtitleStream = Int32(index)
+        }
         subtitleName = name
     }
 
@@ -1482,17 +1486,30 @@ class Video {
         ////av_dict_set(&b, "sub_text_format", "ass", AV_DICT_DONT_OVERWRITE);
         ////av_dict_set(&b, "sub_text_format", "ass", 0);
         sCodecCtx = avcodec_alloc_context3(sCodec)
-        let sSt = pFormatCtx?.pointee.streams[Int(subtitleStream!)]
-        let lang = av_dict_get(sSt?.pointee.metadata, "language", nil, 0)
-        var langString = ""
-        if (lang != nil) {
-            langString = String.init(cString: lang!.pointee.value)
+        for i in 0..<pFormatCtx!.pointee.nb_streams {
+            let stream = pFormatCtx!.pointee.streams![Int(i)]!
+            let par = stream.pointee.codecpar
+            if (par!.pointee.codec_type == AVMEDIA_TYPE_SUBTITLE) {
+                let sSt = pFormatCtx?.pointee.streams[Int(i)]
+                sCodecCtx?.pointee.pkt_timebase = sSt!.pointee.time_base
+                var lang = getAVOpt(sSt!, "language")
+                if (lang == nil) {
+                    lang = "unknown"
+                }
+
+                var title = getAVOpt(sSt!, "title")
+                if (title == nil) {
+                    title = "noname"
+                }
+
+                let subtitleName = "builtin-\(title!) [\(lang!)]"
+                sStreamNameIndex[subtitleName] = i
+                subtitleManager.AddSubtitleStream(subtitleName)
+            }
         }
 
-        let subtitleName = "builtin-\(subtitleStream!)(\(langString))"
-        subtitleManager.AddSubtitleStream(subtitleName)
 
-        sCodecCtx?.pointee.pkt_timebase = sSt!.pointee.time_base
+        //sCodecCtx?.pointee.pkt_timebase = sSt!.pointee.time_base
         //let tb = sSt!.pointee.time_base
         var codec_opts: UnsafeMutablePointer<AVDictionary>? = nil
         av_dict_set(&codec_opts, "threads", "auto", 0);
