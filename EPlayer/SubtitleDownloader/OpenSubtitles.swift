@@ -55,29 +55,7 @@ class OpenSubtitleSubinfo: Subinfo {
 class OpenSubtitlesAPI: DownloaderAPI {
     var apiURL = "https://api.opensubtitles.org/xml-rpc"
 
-    func getFileHash(_ filepath: String) -> String {
-        guard let fh = FileHandle(forReadingAtPath: filepath) else {
-            os_log("error in open file %@", type: .error, filepath)
-            return ""
-        }
-
-        let fileSize = fh.seekToEndOfFile()
-
-        let offsets = [4096, fileSize / 3 * 2, fileSize / 3, fileSize - 8192]
-        let readLength = 4096
-
-        var ret = [String]()
-        for offset in offsets {
-            fh.seek(toFileOffset: offset)
-            let d = fh.readData(ofLength: readLength)
-            ret.append(d.getMD5())
-        }
-
-        return ret.joined(separator: ":")
-    }
-
-
-    func logIn(_ mg: MovieGuesser, _ lang: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
+    func logIn(_ mg: MovieGuesser, _ hash: OpenSubtitlesHash.VideoHash, _ lang: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
         let params: [Any] = ["", "", "en", "TemporaryUserAgent"]
         AlamofireXMLRPC.request(apiURL, methodName: "LogIn", parameters: params).responseXMLRPC { (response: DataResponse<XMLRPCNode>) -> Void in
             switch response.result {
@@ -87,21 +65,32 @@ class OpenSubtitlesAPI: DownloaderAPI {
                         print("OpenSubtitle LogIn API failed")
                         return
                     }
-                    self.searchSubtitles(mg, token!, lang, closure: closure)
+                    self.searchSubtitles(nil, hash, token!, lang, closure: closure)
+                    self.searchSubtitles(mg, nil, token!, lang, closure: closure)
                 case .failure:
                     print("failure")
             }
 
         }
     }
-
-    func searchSubtitles(_ mg: MovieGuesser, _ token: String, _ lang: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
+    func generateQuery(_ mg: MovieGuesser?, _ hash: OpenSubtitlesHash.VideoHash?) -> [String: Any] {
         var query: [String: Any]
-        if (mg.episode != nil) {
-            query = ["query": mg.movieName, "season": mg.season!, "episode": mg.episode!, "sublanguageid": lang]
-        } else {
-            query = ["query": mg.movieName, "sublanguageid": lang]
+        guard let mg = mg else {
+            query = ["moviehash": hash!.fileHash, "moviebytesize": hash!.fileSize]
+            return query
         }
+
+        if (mg.episode != nil) {
+            query = ["query": mg.movieName, "season": mg.season!, "episode": mg.episode!]
+        } else {
+            query = ["query": mg.movieName]
+        }
+        return query
+    }
+
+    func searchSubtitles(_ mg: MovieGuesser?, _ hash: OpenSubtitlesHash.VideoHash?, _ token: String, _ lang: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
+        var query = self.generateQuery(mg, hash)
+        query["sublanguageid"] = lang
         let params: [Any] = [
             token,
             [query],
@@ -142,10 +131,69 @@ class OpenSubtitlesAPI: DownloaderAPI {
         let url = URL(fileURLWithPath: videoFilePath)
         let filename = url.lastPathComponent
         let mg = MovieGuesser(filename)
+        let hash = OpenSubtitlesHash.hashFor(url)
         if (mg.movieName == "") {
             os_log("couldn't guess the movie info of %@", type: .info, filename)
             return
         }
-        logIn(mg, lang, closure: closure)
+        logIn(mg, hash, lang, closure: closure)
+    }
+}
+
+//
+//  This Swift 3 version is based on Swift 2 version by eduo:
+//  https://gist.github.com/eduo/7188bb0029f3bcbf03d4
+//
+//  Created by Niklas Berglund on 2017-01-01.
+//
+class OpenSubtitlesHash: NSObject {
+    static let chunkSize: Int = 65536
+
+    struct VideoHash {
+        var fileHash: String
+        var fileSize: UInt64
+    }
+
+    public class func hashFor(_ url: URL) -> VideoHash {
+        return self.hashFor(url.path)
+    }
+
+    public class func hashFor(_ path: String) -> VideoHash {
+        var fileHash = VideoHash(fileHash: "", fileSize: 0)
+        let fileHandler = FileHandle(forReadingAtPath: path)!
+
+        let fileDataBegin: NSData = fileHandler.readData(ofLength: chunkSize) as NSData
+        fileHandler.seekToEndOfFile()
+
+        let fileSize: UInt64 = fileHandler.offsetInFile
+        if (UInt64(chunkSize) > fileSize) {
+            return fileHash
+        }
+
+        fileHandler.seek(toFileOffset: max(0, fileSize - UInt64(chunkSize)))
+        let fileDataEnd: NSData = fileHandler.readData(ofLength: chunkSize) as NSData
+
+        var hash: UInt64 = fileSize
+
+        var data_bytes = UnsafeBufferPointer<UInt64>(
+            start: UnsafePointer(fileDataBegin.bytes.assumingMemoryBound(to: UInt64.self)),
+            count: fileDataBegin.length/MemoryLayout<UInt64>.size
+        )
+
+        hash = data_bytes.reduce(hash,&+)
+
+        data_bytes = UnsafeBufferPointer<UInt64>(
+            start: UnsafePointer(fileDataEnd.bytes.assumingMemoryBound(to: UInt64.self)),
+            count: fileDataEnd.length/MemoryLayout<UInt64>.size
+        )
+
+        hash = data_bytes.reduce(hash,&+)
+
+        fileHash.fileHash = String(format:"%016qx", arguments: [hash])
+        fileHash.fileSize = fileSize
+
+        fileHandler.closeFile()
+
+        return fileHash
     }
 }
