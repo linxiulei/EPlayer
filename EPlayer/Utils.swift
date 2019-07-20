@@ -385,8 +385,9 @@ class MovieGuesser {
 
             Silicon.Valley.S01E01.720p.BluRay.x265.ShAaNiG
             Love, Death & Robots - S01E01 - Sonnie's Edge
+            CaptainMarvel.2019.1080p.WEB-DL.H264.AC3-EVO
         */
-        let pattern = "([\\w. &,]+)[- ]*[sS](\\d+)[eE](\\d+).*"
+        let pattern = "([\\w. &,]+)[- ]*([sS]\\d+[eE]\\d+|\\d{4})[\\. -]+.*"
 
         let regex = try! NSRegularExpression(pattern: pattern,
                                                  options: [])
@@ -394,8 +395,15 @@ class MovieGuesser {
         if (matches.count > 0) {
             let m = matches[0]
             movieName = (filename as NSString).substring(with: m.range(at: 1)).trimmingCharacters(in: .whitespacesAndNewlines).trimmingCharacters(in: .punctuationCharacters)
-            season = Int32((filename as NSString).substring(with: m.range(at: 2)))
-            episode = Int32((filename as NSString).substring(with: m.range(at: 3)))
+            let part2 = (filename as NSString).substring(with: m.range(at: 2)).lowercased()
+            if part2.starts(with: "s") {
+                let s = part2[
+                    part2.index(part2.startIndex, offsetBy: 1)..<part2.index(of: "e")!]
+                let e = part2[
+                    part2.index(part2.index(of: "e")!, offsetBy: 1)..<part2.endIndex]
+                season = Int32(s)
+                episode = Int32(e)
+            }
         } else {
             movieName = ""
         }
