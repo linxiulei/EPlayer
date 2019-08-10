@@ -156,6 +156,7 @@ class Video {
     var subtitleAttr: [NSAttributedStringKey: Any]
     var paraAttr: [NSAttributedStringKey: Any]
     var layer: AVSampleBufferDisplayLayer
+    var cvPixelBufferPool: CVPixelBufferPool?
     #if targetEnvironment(simulator)
         /*
          * Simulator doesn't implement hwaccel well
@@ -768,7 +769,32 @@ class Video {
         if (layer.error != nil) {
             os_log("layer fail @%", type: .error, layer.error!.localizedDescription)
         }
+    }
 
+    func createPixelBufferPool () -> CVPixelBufferPool? {
+        var cpbp: CVPixelBufferPool? = nil
+        let sourcePixelBufferOptions: NSDictionary = [
+            kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
+            kCVPixelBufferWidthKey: Int(width),
+            kCVPixelBufferHeightKey: Int(height),
+            kCVPixelBufferPixelFormatTypeKey: CVPIX_FMT
+        ]
+
+        let sourcePixelBufferPoolOptions: NSDictionary = [
+            kCVPixelBufferPoolMinimumBufferCountKey: 30
+        ]
+
+        CVPixelBufferPoolCreate(
+            kCFAllocatorDefault,
+            sourcePixelBufferPoolOptions,
+            sourcePixelBufferOptions,
+            &cpbp)
+
+        if (cpbp == nil) {
+            os_log("create pixelBufferPool failed", type: .error)
+            return nil
+        }
+        return cpbp
     }
 
     func getCMSampleBuffer() -> CMSampleBuffer? {
@@ -784,22 +810,17 @@ class Video {
         if (usingHWAccel) {
             pixelBuffer = unsafeBitCast(frame!.pointee.buf.0!.pointee.data, to: CVPixelBuffer.self)
         } else {
+            if (cvPixelBufferPool == nil) {
+                cvPixelBufferPool = createPixelBufferPool()
+            }
 
-            let sourcePixelBufferOptions: NSDictionary = [
-                kCVPixelBufferIOSurfacePropertiesKey: NSDictionary()
-            ]
-
-            let ret = CVPixelBufferCreate(kCFAllocatorDefault,
-                                           Int(width),
-                                           Int(height),
-                                           CVPIX_FMT,
-                                           sourcePixelBufferOptions,
-                                           &pixelBuffer)
+            let ret = CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault,
+                                                         cvPixelBufferPool!,
+                                                         &pixelBuffer)
             if (ret < 0 || pixelBuffer == nil) {
                 os_log("create pixelBuffer failed", type: .error)
                 return nil
             }
-
             CVPixelBufferLockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags.readOnly)
 
             let pixelBufferBase = CVPixelBufferGetBaseAddress(pixelBuffer!) //, Int(pFrameRGB!.pointee.linesize.0 * height))
