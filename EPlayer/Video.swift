@@ -80,7 +80,6 @@ class Video {
     var vCurPts: Int64 = 0
     var duration: Int64 = 0
 
-    var pFrame: UnsafeMutablePointer<AVFrame>?
     var swFrame: UnsafeMutablePointer<AVFrame>?
     var pFrameRGB: UnsafeMutablePointer<AVFrame>?
 
@@ -118,9 +117,9 @@ class Video {
     var width: Int32!
     var height: Int32!
 
-    var audioQueue = AVPacketQueue(0)
-    var videoQueue = AVPacketQueue(0)
-    var subtitleQueue = AVPacketQueue(0)
+    var audioQueue = AVPacketQueue<AVPacket>(0)
+    var videoQueue = AVPacketQueue<AVFrame>(0)
+    var subtitleQueue = AVPacketQueue<AVPacket>(0)
     var swrCtx:  OpaquePointer?
     var swrCtxComp:  OpaquePointer!
 
@@ -270,7 +269,6 @@ class Video {
             aCodecCtx!.pointee.sample_rate,
             0,
             nil)
-
         if (swrCtx == nil) {
             os_log("failed to alloc swr", type: .error)
             return nil
@@ -280,6 +278,7 @@ class Video {
         if isErr(ret, "swrCtx init") {
             return nil
         }
+
 
         layer.requestMediaDataWhenReady(on: DispatchQueue(label: "layer"), using: { () -> Void in
             if (self.videoQueue.isEmpty) {
@@ -478,9 +477,6 @@ class Video {
         }
     }
 
-    func hasEnoughPacket(_ q: AVPacketQueue, _ count: Int) -> Bool {
-        return q.count >= count
-    }
     /*
      * Main thread for putting packets decoded from ffmpeg
      */
@@ -505,7 +501,7 @@ class Video {
                 seekReq = false
                 videoIsEOF = false
                 videoQueue.flush()
-                _ = videoQueue.enqueue(&flushPacket)
+                avcodec_flush_buffers(pCodecCtx)
                 layer.flush()
                 audioQueue.flush()
                 _ = audioQueue.enqueue(&flushPacket)
@@ -527,8 +523,8 @@ class Video {
  */
             }
 
-            if ((videoStream == -1 || hasEnoughPacket(videoQueue, 100)) &&
-                (audioStream == -1 || hasEnoughPacket(audioQueue, 100))) {
+            if ((videoStream == -1 || videoQueue.hasEnough(50)) &&
+                (audioStream == -1 || audioQueue.hasEnough(10))) {
                 /*
                     if (subtitleName != nil) {
                         if subtitleManager.hasNextSubtitle(
@@ -542,6 +538,7 @@ class Video {
                         continue
                     }
  */
+                //print("have enough frames/packets")
                 usleep(100000)
                 continue
             }
@@ -551,7 +548,7 @@ class Video {
             if (ret == AVERROR_EOF) {
                 if (!videoIsEOF) {
                     videoIsEOF = true
-                    _ = videoQueue.enqueue(&EOFPacket)
+                    stop()
                     _ = audioQueue.enqueue(&EOFPacket)
                     av_packet_unref(packet)
                     av_packet_free(&packet)
@@ -567,7 +564,14 @@ class Video {
 
 
             if (packet?.pointee.stream_index == videoStream) {
-                _ = videoQueue.enqueue(packet!)
+                guard let f = decodeVideoFrame(packet) else {
+                    av_packet_unref(packet!)
+                    av_packet_free(&packet)
+                    continue
+                }
+                _ = videoQueue.enqueue(f)
+                av_packet_unref(packet!)
+                av_packet_free(&packet)
             } else if (packet?.pointee.stream_index == audioStream) {
                 _ = audioQueue.enqueue(packet!)
             } else if (packet?.pointee.stream_index == subtitleStream) {
@@ -654,20 +658,12 @@ class Video {
         return playStatus
     }
 
-    func getNextFrame() -> UnsafeMutablePointer<AVFrame>? {
+    func decodeVideoFrame(_ packet: UnsafeMutablePointer<AVPacket>?)
+        -> UnsafeMutablePointer<AVFrame>? {
         var ret: Int32
 
-        var packet = videoQueue.dequeue()
         if (packet == nil) {
             os_log("no frame avaiable", type: .debug)
-            return nil
-        }
-
-        if (packet == &flushPacket) {
-            avcodec_flush_buffers(pCodecCtx)
-            return nil
-        } else if (packet == &EOFPacket) {
-            stop()
             return nil
         }
 
@@ -676,17 +672,16 @@ class Video {
             if (ret == -EAGAIN) {
                 print(EAGAIN)
             }
-
         } while ret == -EAGAIN
 
-        av_packet_unref(packet!)
-        av_packet_free(&packet)
+
 
         if isErr(ret, "avcodec_send_packet") {
             return nil
         }
 
-        ret = avcodec_receive_frame(pCodecCtx, pFrame)
+        let newFrame = av_frame_alloc()
+        ret = avcodec_receive_frame(pCodecCtx, newFrame)
         if (ret == -EAGAIN) {
             print(EAGAIN)
         }
@@ -694,24 +689,20 @@ class Video {
             return nil
         }
 
-        if (usingHWAccel && pFrame!.pointee.format == AV_PIX_FMT_VIDEOTOOLBOX.rawValue) {
-            /*
-            ret = av_hwframe_transfer_data(swFrame, pFrame, 0)
-            if isErr(ret, "av_hwframe_transfer_data") {
-                return nil
-            }
-            swFrame!.pointee.best_effort_timestamp = pFrame!.pointee.best_effort_timestamp
-            return swFrame
- */
-            return pFrame
+        if (usingHWAccel && newFrame!.pointee.format == AV_PIX_FMT_VIDEOTOOLBOX.rawValue) {
+            return newFrame
         } else if (usingHWAccel == false) {
-            return pFrame
+            return newFrame
         } else {
             os_log("Something wrong with video format!", type: .fault)
         }
-        return pFrame
+        return newFrame
     }
 
+    func getNextFrame() -> UnsafeMutablePointer<AVFrame>? {
+        let frame = videoQueue.dequeue()
+        return frame
+    }
 
     func displayViews2() {
         let displayTS = Date().timeIntervalSince1970
@@ -819,7 +810,7 @@ class Video {
 
     func getCMSampleBuffer() -> CMSampleBuffer? {
         //let a = Date().timeIntervalSince1970
-        let frame = getNextFrame()
+        var frame = getNextFrame()
         if (frame == nil) {
             return nil
         }
@@ -841,6 +832,8 @@ class Video {
                 os_log("create pixelBuffer failed", type: .error)
                 return nil
             }
+            //let bb = Date().timeIntervalSince1970
+            //os_log("getting create pixelBuffer uses %f", type: .debug, bb - b)
             CVPixelBufferLockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags.readOnly)
 
             let pixelBufferBase = CVPixelBufferGetBaseAddress(pixelBuffer!) //, Int(pFrameRGB!.pointee.linesize.0 * height))
@@ -886,9 +879,12 @@ class Video {
         }
         info.presentationTimeStamp = CMTimeMake(
             frame!.pointee.best_effort_timestamp * Int64(timeBase.num), timeBase.den)
+
         info.duration = kCMTimeInvalid
         info.decodeTimeStamp = kCMTimeInvalid
 
+        // Actually it frees too early for hwaccel, but it didn't zero it
+        av_frame_free(&frame)
 
         var formatDesc: CMFormatDescription? = nil
         CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, pixelBuffer!, &formatDesc)
@@ -901,6 +897,8 @@ class Video {
                                                  &info,
                                                  &sampleBuffer);
 
+        //let e = Date().timeIntervalSince1970
+        //os_log("getting sws scale uses %f", type: .debug, e - a)
         /*
         let attachments = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer!, true)
         let dict = unsafeBitCast(CFArrayGetValueAtIndex(attachments!, 0), to: CFMutableDictionary.self)
@@ -1363,8 +1361,6 @@ class Video {
 
         width = params.pointee.width
         height = params.pointee.height
-        // Frame for read from context
-        pFrame = av_frame_alloc()
         swFrame = av_frame_alloc()
         // Frame for converting from original frame
         pFrameRGB = av_frame_alloc()
@@ -1457,11 +1453,6 @@ class Video {
         avcodec_free_context(&sCodecCtx)
 
 
-        if (pFrame != nil) {
-            av_frame_unref(pFrame)
-            av_frame_free(&pFrame)
-        }
-
         if (pFrameRGB != nil) {
             av_free(pFrameRGB?.pointee.data.0)
             av_frame_unref(pFrameRGB)
@@ -1510,7 +1501,7 @@ class Video {
         //var b: UnsafeMutablePointer<AVDictionary>? = withUnsafeMutablePointer(to: &codec_opts){$0}
         ////av_dict_set(&b, "sub_text_format", "ass", AV_DICT_DONT_OVERWRITE);
         ////av_dict_set(&b, "sub_text_format", "ass", 0);
-        
+
         assInit(width, height)
         sCodecCtx = avcodec_alloc_context3(sCodec)
         for i in 0..<pFormatCtx!.pointee.nb_streams {
@@ -1560,7 +1551,7 @@ class Video {
         if (subtitle_header != "") {
             let subtitle_header_cast = unsafeBitCast(sCodecCtx?.pointee.subtitle_header,
                                                      to: UnsafeMutablePointer<Int8>.self)
-        
+
             ass_process_data(assTrack,
                              subtitle_header_cast,
                              sCodecCtx!.pointee.subtitle_header_size)

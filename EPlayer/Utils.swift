@@ -34,8 +34,8 @@ class Averager {
     }
 }
 
-public struct AVPacketQueue {
-    fileprivate var array = [UnsafeMutablePointer<AVPacket>]()
+public struct AVPacketQueue<T> {
+    fileprivate var array = [UnsafeMutablePointer<T>]()
     fileprivate var dispatchQueue = DispatchQueue(label: "MyQueue")
     fileprivate var size: Int
     fileprivate var empty_mutex = DispatchSemaphore(value: 1)
@@ -61,7 +61,7 @@ public struct AVPacketQueue {
     public var count: Int {
         return array.count
     }
-    public mutating func enqueue(_ element: UnsafeMutablePointer<AVPacket>) -> Int {
+    public mutating func enqueue(_ element: UnsafeMutablePointer<T>) -> Int {
         var ret = 0
         dispatchQueue.sync {
             if (isFull) {
@@ -73,8 +73,8 @@ public struct AVPacketQueue {
         return ret
     }
 
-    public mutating func dequeue() -> UnsafeMutablePointer<AVPacket>? {
-        var ret: UnsafeMutablePointer<AVPacket>? = nil
+    public mutating func dequeue() -> UnsafeMutablePointer<T>? {
+        var ret: UnsafeMutablePointer<T>? = nil
 
         dispatchQueue.sync {
             if isEmpty {
@@ -91,15 +91,32 @@ public struct AVPacketQueue {
     public mutating func flush() {
         dispatchQueue.sync {
             for (index, _) in array.enumerated() {
-                var p:UnsafeMutablePointer<AVPacket>?  = array[index]
-                if (p == &flushPacket || p == &EOFPacket){
-                    continue
+                let p: UnsafeMutablePointer<T>? = array[index]
+
+                let typeName = String(describing: T.self)
+                if (typeName == "AVFrame") {
+                    var p1 = p as! UnsafeMutablePointer<AVFrame>?
+                    av_frame_unref(p1)
+                    let cast = withUnsafeMutablePointer(to: &p1){$0}
+                                        print("flush")
+                    av_frame_free(cast)
+                } else {
+                    var p1 = p as! UnsafeMutablePointer<AVPacket>?
+                    if (p1 == &flushPacket || p1 == &EOFPacket){
+                        continue
+                    }
+                    av_packet_unref(p1)
+                    let cast = withUnsafeMutablePointer(to: &p1){$0}
+
+                    av_packet_free(cast)
                 }
-                av_packet_unref(array[index])
-                av_packet_free(&p)
             }
             array.removeAll()
         }
+    }
+
+    func hasEnough(_ count: Int) -> Bool {
+        return self.count >= count
     }
 }
 
