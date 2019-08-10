@@ -1028,16 +1028,19 @@ class Video {
                 continue
             }
             let assLine = String.init(cString: r.ass)
+            guard let track = assTrack?.pointee else {
+                continue
+            }
             ass_process_data(assTrack, r.ass, Int32(assLine.count))
-            let track = assTrack?.pointee
-            if track!.n_events < 1 {
+
+            if track.n_events < 1 {
                 print("failed to process ass line \(assLine)")
                 continue
             }
 
-            let eventIndex = track!.n_events - 1
-            let event = track?.events[Int(eventIndex)]
-            text += String.init(cString: event!.Text)
+            let eventIndex = track.n_events - 1
+            let event = track.events[Int(eventIndex)]
+            text += String.init(cString: event.Text)
         }
         return text
     }
@@ -1506,11 +1509,20 @@ class Video {
         //var b: UnsafeMutablePointer<AVDictionary>? = withUnsafeMutablePointer(to: &codec_opts){$0}
         ////av_dict_set(&b, "sub_text_format", "ass", AV_DICT_DONT_OVERWRITE);
         ////av_dict_set(&b, "sub_text_format", "ass", 0);
+        
+        assInit(width, height)
         sCodecCtx = avcodec_alloc_context3(sCodec)
         for i in 0..<pFormatCtx!.pointee.nb_streams {
             let stream = pFormatCtx!.pointee.streams![Int(i)]!
-            let par = stream.pointee.codecpar
-            if (par!.pointee.codec_type == AVMEDIA_TYPE_SUBTITLE) {
+            guard let par = stream.pointee.codecpar else {
+                continue
+            }
+            if (par.pointee.codec_type == AVMEDIA_TYPE_SUBTITLE) {
+                let subtitle_header_cast = unsafeBitCast(par.pointee.extradata,
+                                                         to: UnsafeMutablePointer<Int8>.self)
+                ass_process_data(assTrack,
+                                 subtitle_header_cast,
+                                 par.pointee.extradata_size)
                 let sSt = pFormatCtx?.pointee.streams[Int(i)]
                 sCodecCtx?.pointee.pkt_timebase = sSt!.pointee.time_base
                 var lang = getAVOpt(sSt!, "language")
@@ -1543,14 +1555,16 @@ class Video {
         }
         av_dict_free(&codec_opts)
 
-        assInit(width, height)
+        let subtitle_header = String.init(cString: sCodecCtx!.pointee.subtitle_header)
+        if (subtitle_header != "") {
+            let subtitle_header_cast = unsafeBitCast(sCodecCtx?.pointee.subtitle_header,
+                                                     to: UnsafeMutablePointer<Int8>.self)
+        
+            ass_process_data(assTrack,
+                             subtitle_header_cast,
+                             sCodecCtx!.pointee.subtitle_header_size)
+        }
 
-        print(String.init(cString: sCodecCtx!.pointee.subtitle_header))
-        let subtitle_header_cast = unsafeBitCast(sCodecCtx?.pointee.subtitle_header,
-                                                 to: UnsafeMutablePointer<Int8>.self)
-        ass_process_data(assTrack,
-                         subtitle_header_cast,
-                         sCodecCtx!.pointee.subtitle_header_size)
         ass_set_check_readorder(assTrack, 1)
         return 0
     }
