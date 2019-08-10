@@ -413,8 +413,28 @@ class Video {
         guard let index = aStreamNameIndex[name] else {
             return
         }
+        openAudioCodecWithStream(Int(index))
         audioStream = Int32(index)
         seekCurrent()
+    }
+
+    func openAudioCodecWithStream(_ index: Int) {
+        aCodecCtx = avcodec_alloc_context3(aCodec)
+        let params: UnsafeMutablePointer<AVCodecParameters>! = pFormatCtx!.pointee.streams[index]!.pointee.codecpar
+
+        aStream = pFormatCtx!.pointee.streams[Int(index)]
+        aCodecCtx!.pointee.pkt_timebase = aStream!.pointee.time_base
+        var ret = avcodec_parameters_to_context(aCodecCtx, params)
+        if isErr(ret, "parameters_to_context") {
+
+        }
+
+        var codec_opts: UnsafeMutablePointer<AVDictionary>? = nil
+        av_dict_set(&codec_opts, "threads", "auto", 0);
+        if isErr(avcodec_open2(aCodecCtx, aCodec, &codec_opts), "avcode_open2 audio") {
+            av_dict_free(&codec_opts)
+        }
+        av_dict_free(&codec_opts)
     }
 
     func getSubtitleStreamNames() -> [String] {
@@ -1390,7 +1410,6 @@ class Video {
      * Audio related initials
      */
     func aDecInit() -> Int32{
-        var ret: Int32
         audioStream = av_find_best_stream(pFormatCtx,
                                           AVMEDIA_TYPE_AUDIO,
                                           -1, -1,
@@ -1405,25 +1424,6 @@ class Video {
             print("Unsupport codec\n")
             return -1
         }
-
-
-        aCodecCtx = avcodec_alloc_context3(aCodec)
-        let params: UnsafeMutablePointer<AVCodecParameters>! = pFormatCtx!.pointee.streams[Int(audioStream)]!.pointee.codecpar
-
-        aStream = pFormatCtx!.pointee.streams[Int(audioStream)]
-        aCodecCtx!.pointee.pkt_timebase = aStream!.pointee.time_base
-        ret = avcodec_parameters_to_context(aCodecCtx, params)
-        if isErr(ret, "parameters_to_context") {
-            return ret
-        }
-
-        var codec_opts: UnsafeMutablePointer<AVDictionary>? = nil
-        av_dict_set(&codec_opts, "threads", "auto", 0);
-        if isErr(avcodec_open2(aCodecCtx, aCodec, &codec_opts), "avcode_open2 audio") {
-            av_dict_free(&codec_opts)
-            return ret
-        }
-        av_dict_free(&codec_opts)
 
         for i in 0..<pFormatCtx!.pointee.nb_streams {
             let stream = pFormatCtx!.pointee.streams![Int(i)]!
@@ -1442,6 +1442,7 @@ class Video {
                 aStreamNameIndex[streamName] = i
             }
         }
+        openAudioCodecWithStream(Int(audioStream))
 
         return 0
     }
