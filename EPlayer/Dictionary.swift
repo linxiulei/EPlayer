@@ -66,20 +66,29 @@ class EPDictionary {
          */
         //fwordDict["you"] = true
 
-        if let path = Bundle.main.path(forResource: "farmiliar5000", ofType: "csv") {
-            do {
-                let data = try String(contentsOfFile: path, encoding: .utf8)
-                let lines = data.components(separatedBy: .newlines)
-                for l in lines {
-                    let segments = l.components(separatedBy: ",")
-                    for seg in segments {
-                        fwordDict[seg.lowercased()] = true
-                    }
-                }
-            } catch {
+        addFamiliarFromFile("familiar5000", "csv")
+        addFamiliarFromFile("names", "txt")
+    }
 
-            }
+    func addFamiliarFromFile(_ filepath: String, _ type: String) {
+        guard let path = Bundle.main.path(forResource: filepath, ofType: type) else {
+            print("no such file \(filepath).\(type)")
+            return
         }
+
+        do {
+            let data = try String(contentsOfFile: path, encoding: .utf8)
+            let lines = data.components(separatedBy: .newlines)
+            for l in lines {
+                let segments = l.components(separatedBy: ",")
+                for seg in segments {
+                    fwordDict[seg.lowercased()] = true
+                }
+            }
+        } catch {
+
+        }
+
     }
 
     func isFamiliar(_ word: String) -> Bool {

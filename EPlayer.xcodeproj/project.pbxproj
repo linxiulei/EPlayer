@@ -7,12 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8AABA71422FF6406007D31E8 /* names.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8AABA71322FF6406007D31E8 /* names.txt */; };
 		B3E2A6CA552C2F35FE152D2D /* Pods_EPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BD6E595FAC6F4E7A0DE8088 /* Pods_EPlayer.framework */; };
 		D904B8B0207B6A7600AD9CD1 /* MoviePanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D904B8AF207B6A7600AD9CD1 /* MoviePanelController.swift */; };
 		D904B8B5207C966D00AD9CD1 /* libuchardet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D904B8B4207C966D00AD9CD1 /* libuchardet.a */; };
 		D90A549A206FA05400C275E0 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90A5499206FA05400C275E0 /* Utils.swift */; };
 		D90A54A020707C8D00C275E0 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90A549F20707C8D00C275E0 /* Dictionary.swift */; };
-		D90A54A42070B8FD00C275E0 /* farmiliar5000.csv in Resources */ = {isa = PBXBuildFile; fileRef = D90A54A32070B8FD00C275E0 /* farmiliar5000.csv */; };
+		D90A54A42070B8FD00C275E0 /* familiar5000.csv in Resources */ = {isa = PBXBuildFile; fileRef = D90A54A32070B8FD00C275E0 /* familiar5000.csv */; };
 		D90A54A62070E03500C275E0 /* dictfile.csv in Resources */ = {isa = PBXBuildFile; fileRef = D90A54A52070E03500C275E0 /* dictfile.csv */; };
 		D915D115205BBBFF000BE745 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D915D114205BBBFF000BE745 /* AppDelegate.swift */; };
 		D915D117205BBBFF000BE745 /* MovieViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D915D116205BBBFF000BE745 /* MovieViewController.swift */; };
@@ -74,12 +75,13 @@
 		0BD6E595FAC6F4E7A0DE8088 /* Pods_EPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C06CBCF6D04E332A6B0CC5 /* Pods-EPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EPlayer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EPlayer/Pods-EPlayer.debug.xcconfig"; sourceTree = "<group>"; };
 		83D4AF9D3C7086CF50D6DA16 /* Pods-EPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-EPlayer/Pods-EPlayer.release.xcconfig"; sourceTree = "<group>"; };
+		8AABA71322FF6406007D31E8 /* names.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = names.txt; sourceTree = "<group>"; };
 		D904B8AF207B6A7600AD9CD1 /* MoviePanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviePanelController.swift; sourceTree = "<group>"; };
 		D904B8B3207C966D00AD9CD1 /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
 		D904B8B4207C966D00AD9CD1 /* libuchardet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libuchardet.a; sourceTree = "<group>"; };
 		D90A5499206FA05400C275E0 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		D90A549F20707C8D00C275E0 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
-		D90A54A32070B8FD00C275E0 /* farmiliar5000.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = farmiliar5000.csv; sourceTree = "<group>"; };
+		D90A54A32070B8FD00C275E0 /* familiar5000.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = familiar5000.csv; sourceTree = "<group>"; };
 		D90A54A52070E03500C275E0 /* dictfile.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dictfile.csv; sourceTree = "<group>"; };
 		D915D111205BBBFF000BE745 /* EPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D915D114205BBBFF000BE745 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -411,6 +413,7 @@
 		D915D113205BBBFF000BE745 /* EPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				8AABA71322FF6406007D31E8 /* names.txt */,
 				D9D15BC220830327007108D8 /* SubtitleDownloader */,
 				D90A549F20707C8D00C275E0 /* Dictionary.swift */,
 				D9AB8B1C206A4C5900CE5EA2 /* FileListViewController.swift */,
@@ -426,7 +429,7 @@
 				D90A54A52070E03500C275E0 /* dictfile.csv */,
 				D915D14C205BBC3A000BE745 /* EPlayer-Bridging-Header.h */,
 				D915D116205BBBFF000BE745 /* MovieViewController.swift */,
-				D90A54A32070B8FD00C275E0 /* farmiliar5000.csv */,
+				D90A54A32070B8FD00C275E0 /* familiar5000.csv */,
 				D9B555C42068945900116ABB /* MyUI.swift */,
 				D915D118205BBBFF000BE745 /* Main.storyboard */,
 				D9CB4624205CD8580004284C /* macro.m */,
@@ -950,7 +953,8 @@
 				D915D11F205BBBFF000BE745 /* LaunchScreen.storyboard in Resources */,
 				D915D11C205BBBFF000BE745 /* Assets.xcassets in Resources */,
 				D90A54A62070E03500C275E0 /* dictfile.csv in Resources */,
-				D90A54A42070B8FD00C275E0 /* farmiliar5000.csv in Resources */,
+				8AABA71422FF6406007D31E8 /* names.txt in Resources */,
+				D90A54A42070B8FD00C275E0 /* familiar5000.csv in Resources */,
 				D915D11A205BBBFF000BE745 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
