@@ -1049,15 +1049,20 @@ class Video {
             guard let track = assTrack?.pointee else {
                 continue
             }
-            ass_process_data(assTrack, r.ass, Int32(assLine.count))
+            let start_time = subframe.pts / 1000
+            let duration = subframe.end_display_time
+            let n_events = track.n_events
+            ass_process_chunk(assTrack, r.ass, Int32(assLine.count), start_time, Int64(duration))
 
-            if track.n_events < 1 {
+            if n_events == assTrack!.pointee.n_events {
                 print("failed to process ass line \(assLine)")
+
+            }
+            let eventIndex = assTrack!.pointee.n_events - 1
+            let event = assTrack!.pointee.events[Int(eventIndex)]
+            if (event.Text == nil) {
                 continue
             }
-
-            let eventIndex = track.n_events - 1
-            let event = track.events[Int(eventIndex)]
             text += String.init(cString: event.Text)
         }
         return text
@@ -1538,6 +1543,7 @@ class Video {
         //let tb = sSt!.pointee.time_base
         var codec_opts: UnsafeMutablePointer<AVDictionary>? = nil
         av_dict_set(&codec_opts, "threads", "auto", 0);
+        av_dict_set(&codec_opts, "sub_text_format", "ass", 0);
         if isErr(avcodec_open2(sCodecCtx,
                                sCodec,
                                &codec_opts),
