@@ -1045,16 +1045,18 @@ class Video {
             if (r.ass == nil) {
                 continue
             }
-            let assLine = String.init(cString: r.ass)
             guard let track = assTrack?.pointee else {
                 continue
             }
             let start_time = subframe.pts / 1000
             let duration = subframe.end_display_time
             let n_events = track.n_events
-            ass_process_chunk(assTrack, r.ass, Int32(assLine.count), start_time, Int64(duration))
+            ass_process_chunk(assTrack, r.ass,
+                              Int32(strlen(r.ass)),
+                              start_time, Int64(duration))
 
             if n_events == assTrack!.pointee.n_events {
+                let assLine = String.init(cString: r.ass)
                 print("failed to process ass line \(assLine)")
 
             }
