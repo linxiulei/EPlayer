@@ -407,8 +407,11 @@
                                                 <constraint firstAttribute="width" id="non-kb-029"/>
                                             </constraints>
                                         </view>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M7F-Fw-nv5">
-                                            <rect key="frame" x="790" y="11.5" width="42" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M7F-Fw-nv5">
+                                            <rect key="frame" x="964" y="11.5" width="40" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="40" id="g8a-Dj-bjB"/>
+                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -419,19 +422,31 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ri2-cI-tO9" userLabel="Subtitle">
+                                            <rect key="frame" x="944" y="11.5" width="10" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="10" id="eiR-zv-Jb3"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="sKe-jA-Vcv" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="3HR-7G-Dw6"/>
                                         <constraint firstItem="huB-1J-0ff" firstAttribute="leading" secondItem="sKe-jA-Vcv" secondAttribute="trailing" id="8KI-0A-14R"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="M7F-Fw-nv5" secondAttribute="trailing" id="Apx-c9-s5r"/>
                                         <constraint firstItem="M7F-Fw-nv5" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="C4t-uw-heI"/>
+                                        <constraint firstItem="M7F-Fw-nv5" firstAttribute="leading" secondItem="Ri2-cI-tO9" secondAttribute="trailing" constant="10" id="KC2-f7-w3A"/>
                                         <constraint firstItem="huB-1J-0ff" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="OB0-gT-Dq8"/>
                                         <constraint firstItem="sKe-jA-Vcv" firstAttribute="leading" secondItem="Oxx-uw-sJK" secondAttribute="leading" constant="10" id="OTM-sy-CgE"/>
                                         <constraint firstAttribute="bottom" secondItem="sKe-jA-Vcv" secondAttribute="bottom" constant="10" id="b2C-fW-wSX"/>
+                                        <constraint firstItem="Ri2-cI-tO9" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="cer-RV-Jy0"/>
                                         <constraint firstItem="sKe-jA-Vcv" firstAttribute="top" secondItem="Oxx-uw-sJK" secondAttribute="top" constant="10" id="vQE-KT-aDT"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="Subtitle" destination="Ri2-cI-tO9" id="5Xe-pC-tNa"/>
                                     <outlet property="checkBox" destination="sKe-jA-Vcv" id="Ifj-5w-5Vf"/>
                                     <outlet property="checkBoxWidth" destination="non-kb-029" id="Ocq-RM-1eM"/>
                                     <outlet property="fileName" destination="huB-1J-0ff" id="CX5-om-ir7"/>

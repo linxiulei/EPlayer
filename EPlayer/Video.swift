@@ -467,13 +467,24 @@ class Video {
         let fileManager = FileManager.default
 
         let videoFileURL = URL(fileURLWithPath: filepath)
-        for subtitleExt in ["srt", "ass"] {
+        for subtitleExt in ["srt", "ass", "ssa"] {
             let subtitleFilepath = videoFileURL.deletingPathExtension().appendingPathExtension(subtitleExt)
             if fileManager.fileExists(atPath: subtitleFilepath.path) {
                 os_log("Found external subtitle: %@", type: .info, subtitleFilepath.path)
                 subtitleManager.initLibass(width, height)
                 subtitleManager.AddSubtitleStreamFromFile(subtitleFilepath.path, subtitleFilepath.lastPathComponent)
             }
+        }
+
+        do {
+            let fileURLs = try fileManager.contentsOfDirectory(at: videoFileURL.deletingPathExtension(),
+                                                               includingPropertiesForKeys: nil)
+            for subtitleFilepath in fileURLs {
+                os_log("Found external subtitle: %@", type: .info, subtitleFilepath.path)
+                subtitleManager.initLibass(width, height)
+                subtitleManager.AddSubtitleStreamFromFile(subtitleFilepath.path, subtitleFilepath.lastPathComponent)
+            }
+        } catch {
         }
     }
 

@@ -14,6 +14,7 @@ import BEMCheckBox
 class FileListCell: UITableViewCell, BEMCheckBoxDelegate {
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var progress: UILabel!
+    @IBOutlet weak var subtitle: UILabel!
     @IBOutlet weak var checkBox: BEMCheckBox!
     @IBOutlet weak var checkBoxWidth: NSLayoutConstraint!
     var tapCallback: (() -> ())?
@@ -137,6 +138,11 @@ class FileListViewController: UITableViewController {
         let movieFile = movieFileManager.getMovieFileByIndex(indexPath.row)
         cell.fileName.text = movieFile.getName()
         cell.checkBox.delegate = cell
+        if movieFile.hasSub() {
+            cell.subtitle.text = "S"
+        } else {
+            cell.subtitle.text = ""
+        }
 
         func tapCB () {
             checkBoxChecked[indexPath.row] = !checkBoxChecked[indexPath.row]
@@ -262,6 +268,27 @@ class MovieFile {
         var isDirectory = ObjCBool(false)
         if FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) {
             return isDirectory.boolValue
+        }
+        return false
+    }
+
+    func hasSub() -> Bool {
+        let fileManager = FileManager.default
+
+        for subtitleExt in SUBTITLE_SUFFIX {
+            let subtitleFilepath = url.deletingPathExtension().appendingPathExtension(subtitleExt)
+            if fileManager.fileExists(atPath: subtitleFilepath.path) {
+                return true
+            }
+        }
+        do {
+            let fileURLs = try fileManager.contentsOfDirectory(at: url.deletingPathExtension(),
+                                                               includingPropertiesForKeys: nil)
+            if fileURLs.count > 0 {
+                return true
+            }
+        } catch {
+            return false
         }
         return false
     }
