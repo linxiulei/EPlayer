@@ -122,6 +122,16 @@ class FileListViewController: UITableViewController {
         cell.checkBox.on = false
     }
 
+    override func tableView(_ tableView: UITableView,
+                   heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let movieFile = movieFileManager.getMovieFileByIndex(indexPath.row)
+        if (movieFile.isMovie()) {
+            return 40
+        } else {
+            return 0
+        }
+    }
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FileCell", for: indexPath) as! FileListCell
         let movieFile = movieFileManager.getMovieFileByIndex(indexPath.row)
