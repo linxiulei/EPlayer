@@ -1565,14 +1565,16 @@ class Video {
         }
         av_dict_free(&codec_opts)
 
-        let subtitle_header = String.init(cString: sCodecCtx!.pointee.subtitle_header)
-        if (subtitle_header != "") {
-            let subtitle_header_cast = unsafeBitCast(sCodecCtx?.pointee.subtitle_header,
-                                                     to: UnsafeMutablePointer<Int8>.self)
+        if (sCodecCtx!.pointee.subtitle_header != nil) {
+            let subtitle_header = String.init(cString: sCodecCtx!.pointee.subtitle_header)
+            if subtitle_header != "" {
+                let subtitle_header_cast = unsafeBitCast(sCodecCtx?.pointee.subtitle_header,
+                                                         to: UnsafeMutablePointer<Int8>.self)
 
-            ass_process_data(assTrack,
-                             subtitle_header_cast,
-                             sCodecCtx!.pointee.subtitle_header_size)
+                ass_process_data(assTrack,
+                                 subtitle_header_cast,
+                                 sCodecCtx!.pointee.subtitle_header_size)
+            }
         }
 
         ass_set_check_readorder(assTrack, 1)
