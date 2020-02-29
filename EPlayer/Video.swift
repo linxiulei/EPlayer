@@ -483,6 +483,13 @@ class Video {
     func decode_thread() {
         decodeThreadIsStopped = false
         while playStatus != PlayStatus.stopped {
+            if playStatus != PlayStatus.pause {
+                if (layer.status == AVQueuedSampleBufferRenderingStatus.failed) {
+                    print("flush")
+                    layer.flush()
+                    avcodec_flush_buffers(pCodecCtx)
+                }
+            }
             if (seekReq) {
                 let vTimeBase = vStream!.pointee.time_base
                 let pts = MSTopts(seekTsInMSec, vTimeBase)
@@ -523,8 +530,8 @@ class Video {
  */
             }
 
-            if ((videoStream == -1 || videoQueue.hasEnough(50)) &&
-                (audioStream == -1 || audioQueue.hasEnough(10))) {
+            if ((videoStream == -1 || videoQueue.hasEnough(100)) &&
+                (audioStream == -1 || audioQueue.hasEnough(20))) {
                 /*
                     if (subtitleName != nil) {
                         if subtitleManager.hasNextSubtitle(
@@ -562,7 +569,6 @@ class Video {
             }
             //print("queue size \(videoQueue.count) \(audioQueue.count) \(subtitleQueue.count)")
 
-
             if (packet?.pointee.stream_index == videoStream) {
                 guard let f = decodeVideoFrame(packet) else {
                     av_packet_unref(packet!)
@@ -592,8 +598,12 @@ class Video {
 
     func pause() {
         var ret: OSStatus
+        ret = AudioQueuePause(_audioQueue!)
+        if (isErr(ret, "AudioQueuePause")) {
+            
+        }
         if (playStatus != PlayStatus.pause) {
-            os_log("pause", type: .debug)
+
             playStatus = PlayStatus.pause
 
             ret = AudioQueuePause(_audioQueue!)
@@ -604,6 +614,7 @@ class Video {
             CMTimebaseSetRate(layer.controlTimebase!, 0)
 
             _displayTimer?.invalidate()
+            os_log("pause", type: .debug)
             //_videoTimer?.invalidate()
 
 
@@ -673,7 +684,6 @@ class Video {
                 print(EAGAIN)
             }
         } while ret == -EAGAIN
-
 
 
         if isErr(ret, "avcodec_send_packet") {
@@ -772,7 +782,7 @@ class Video {
         //let a = Date().timeIntervalSince1970
         let sampleBuffer = getCMSampleBuffer()
         //let b = Date().timeIntervalSince1970
-        //os_log("getting sample buffer uses %f", type: .debug, b - a)
+        //os_log("getting sample buffer1 uses %f", type: .debug, b - a)
         if (sampleBuffer == nil) {
             return
         }

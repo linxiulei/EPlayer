@@ -275,9 +275,31 @@ class MovieViewController: UIViewController, UIGestureRecognizerDelegate {
         }
         return true
     }
+    
+    @objc func appMovedToForeground() {
+        guard let _ = self.video else {
+            return
+        }
+        video.play()
+
+    }
+    
+    @objc func appMovedToBackground() {
+        guard let _ = self.video else {
+            return
+        }
+        video.pause()
+    }
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(appMovedToForeground),
+                                       name: Notification.Name.UIApplicationWillEnterForeground, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(appMovedToBackground),
+                                       name: Notification.Name.UIApplicationWillResignActive, object: nil)
         volume = volumeView.subviews.first as? UISlider
         singleTap.require(toFail: doubleTap)
         singleTap.delegate = self
