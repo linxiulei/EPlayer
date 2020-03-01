@@ -403,7 +403,6 @@
                                                 <accessibilityTraits key="traits" button="YES"/>
                                             </accessibility>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="23.5" id="Eyf-VD-whu"/>
                                                 <constraint firstAttribute="width" id="non-kb-029"/>
                                             </constraints>
                                         </view>
@@ -433,7 +432,6 @@
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="sKe-jA-Vcv" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="3HR-7G-Dw6"/>
                                         <constraint firstItem="huB-1J-0ff" firstAttribute="leading" secondItem="sKe-jA-Vcv" secondAttribute="trailing" id="8KI-0A-14R"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="M7F-Fw-nv5" secondAttribute="trailing" id="Apx-c9-s5r"/>
                                         <constraint firstItem="M7F-Fw-nv5" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="C4t-uw-heI"/>
@@ -442,7 +440,6 @@
                                         <constraint firstItem="sKe-jA-Vcv" firstAttribute="leading" secondItem="Oxx-uw-sJK" secondAttribute="leading" constant="10" id="OTM-sy-CgE"/>
                                         <constraint firstAttribute="bottom" secondItem="sKe-jA-Vcv" secondAttribute="bottom" constant="10" id="b2C-fW-wSX"/>
                                         <constraint firstItem="Ri2-cI-tO9" firstAttribute="centerY" secondItem="Oxx-uw-sJK" secondAttribute="centerY" id="cer-RV-Jy0"/>
-                                        <constraint firstItem="sKe-jA-Vcv" firstAttribute="top" secondItem="Oxx-uw-sJK" secondAttribute="top" constant="10" id="vQE-KT-aDT"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
