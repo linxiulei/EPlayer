@@ -31,6 +31,8 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
     @IBOutlet weak var wifiActiveLabel: UILabel!
     @IBOutlet weak var fileBtn: UIButton!
     @IBOutlet weak var wifiBtn: UIButton!
+    @IBOutlet weak var subBtn: UIButton!
+
     @IBOutlet weak var checkAllBox: BEMCheckBox!
     @IBOutlet weak var checkAllBoxWidth: NSLayoutConstraint!
 
@@ -44,6 +46,27 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
         }
 
         fileListView.checkAllBoxes(box.on)
+    }
+
+    @IBAction func clickSub(_ sender: UIButton) {
+        guard let files =  fileListView?.movieFileManager.movieFiles else {
+            return
+        }
+        var count: Int = 0
+        for file in files {
+            if (!file.isMovie()) {
+                continue
+            }
+            count += 1
+            // OpenSubtitle limits 40 requests per 10 seconds per IP
+            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + DispatchTimeInterval.seconds(5 * count)) {
+                downloadSubtitleAndSave(file.path) {(_, _) in
+                    
+                }
+            }
+
+        }
+        fileListView?.refreshFile()
     }
 
     @IBAction func clickFile(_ sender: UIButton) {
@@ -105,6 +128,7 @@ class ControlPanelController: UIViewController, BEMCheckBoxDelegate {
 
     override func viewDidLoad() {
         checkAllBox.delegate = self
+        subBtn.setTitle("Loading", for: UIControlState.highlighted)
         super.viewDidLoad()
     }
 }

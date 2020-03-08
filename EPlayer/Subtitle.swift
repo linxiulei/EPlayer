@@ -313,4 +313,54 @@ func process(_ mdict: EPDictionary, _ text: String) -> String {
     return pText
 }
 
+func saveSubtitleToFile(_ subinfo: Subinfo, _ subtitlePath: String) -> Bool {
+    guard let data = subinfo.data else {
+        return false
+    }
 
+    return FileManager.default.createFile(
+        atPath: subtitlePath,
+        contents: data,
+        attributes: nil)
+}
+
+func downloadSubtitleAndSave(_ videoFilePath: String, closure: @escaping (_ subtitlePath: String, _ subtitleName: String) -> Void) {
+    let MAX_SUBTITLES = 10
+    var subtitleID = ["chi": 0,
+                      "eng": 0]
+
+    let videoFileURL = URL(fileURLWithPath: videoFilePath)
+    let subtitleDirectory = videoFileURL.deletingPathExtension().path
+
+    try! FileManager.default.createDirectory(atPath: subtitleDirectory,
+                                             withIntermediateDirectories: true,
+                                             attributes: nil)
+
+    for lang in subtitleID.keys {
+        OpenSubtitlesAPI().downloadSubtitles(videoFilePath, lang) { (_ subinfo: Subinfo) in
+            if (subtitleID[lang]! > MAX_SUBTITLES) {
+                return
+            }
+            let subtitleName = subinfo.langs.joined(separator: "&") + ".\(subtitleID[lang]!)." + subinfo.ext
+            let subtitlePath = subtitleDirectory + "/" + subtitleName
+            if (saveSubtitleToFile(subinfo, subtitlePath)) {
+                subtitleID[lang]! += 1
+                closure(subtitlePath, subtitleName)
+            }
+        }
+    }
+
+    for lang in ["chi"] {
+        XLAPI().downloadSubtitles(videoFilePath, lang) { (_ subinfo: Subinfo) in
+            if (subtitleID[lang]! > MAX_SUBTITLES) {
+                return
+            }
+            let subtitleName = subinfo.langs.joined(separator: "&") + ".\(subtitleID[lang]!)." + subinfo.ext
+            let subtitlePath = subtitleDirectory + "/" + subtitleName
+            if (saveSubtitleToFile(subinfo, subtitlePath)) {
+                subtitleID[lang]! += 1
+                closure(subtitlePath, subtitleName)
+            }
+        }
+    }
+}

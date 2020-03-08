@@ -88,7 +88,6 @@ class XLAPI: DownloaderAPI {
         guard let url = URL(string: urlString) else { return }
 
         var ret: [Subinfo?] = []
-        print(url)
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if error != nil {
                 print("Xunlei: \(error!.localizedDescription)")
@@ -101,6 +100,9 @@ class XLAPI: DownloaderAPI {
                 let result = try JSONDecoder().decode(XLResult.self, from: ndata)
                 for xl in result.sublist {
                     ret.append(XLSubinfo(xl))
+                }
+                if (ret.count == 0) {
+                    os_log("%d subtitles of %s found in Xunlei", type: .info, 0, lang)
                 }
 
                 for sub in ret {

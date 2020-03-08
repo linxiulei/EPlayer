@@ -336,63 +336,14 @@ class Video {
     }
 
     func downloadSubtitles(closure: @escaping () -> Void) {
-        var subtitleID = ["chi": 0,
-                          "eng": 0]
-        createSubtitleDirectory()
-
         subtitleManager.initLibass(width, height)
 
-        for lang in subtitleID.keys {
-            OpenSubtitlesAPI().downloadSubtitles(filepath, lang) { (_ subinfo: Subinfo) in
-                if (subtitleID[lang]! > MAX_SUBTITLES) {
-                    return
-                }
-                self.subtitleDownloadCallback(subinfo, "\(subtitleID[lang]!)")
-                subtitleID[lang]! += 1
-                closure()
-            }
-        }
-
-        for lang in ["chi"] {
-            XLAPI().downloadSubtitles(filepath, lang) { (_ subinfo: Subinfo) in
-                if (subtitleID[lang]! > MAX_SUBTITLES) {
-                    return
-                }
-                self.subtitleDownloadCallback(subinfo, "\(subtitleID[lang]!)")
-                subtitleID[lang]! += 1
-                closure()
-            }
-        }
-
-        /*
-        ShooterAPI().downloadSubtitles(filepath, "eng") { (_ subinfo: Subinfo) in
-            if (subtitleID > MAX_SUBTITLES) {
-                return
-            }
-            self.subtitleDownloadCallback(subinfo, "\(subtitleID)")
-            subtitleID += 1
+        downloadSubtitleAndSave(filepath) { (_ subtitlePath: String, _ subtitleName: String) in
+            self.subtitleManager.AddSubtitleStreamFromFile(
+                subtitlePath, subtitleName
+            )
             closure()
         }
-         */
-
-    }
-
-    func subtitleDownloadCallback(_ subinfo: Subinfo, _ suffix: String) {
-        guard let data = subinfo.data else {
-            os_log("no data found in subinfo", type: .debug)
-            return
-        }
-
-        let subtitleName = subinfo.langs.joined(separator: "&") + ".\(suffix)." + subinfo.ext
-        let subtitlePath = self.getSubtitleDirectory() + "/" + subtitleName
-        FileManager.default.createFile(
-            atPath: subtitlePath,
-            contents: data,
-            attributes: nil)
-
-        self.subtitleManager.AddSubtitleStreamFromFile(
-            subtitlePath, subtitleName
-        )
     }
 
     func startAudioQueue() {

@@ -50,8 +50,6 @@ class OpenSubtitleSubinfo: Subinfo {
     }
 }
 
-
-
 class OpenSubtitlesAPI: DownloaderAPI {
     var apiURL = "https://api.opensubtitles.org/xml-rpc"
 
@@ -68,7 +66,7 @@ class OpenSubtitlesAPI: DownloaderAPI {
                     self.searchSubtitles(nil, hash, token!, lang, closure: closure)
                     self.searchSubtitles(mg, nil, token!, lang, closure: closure)
                 case .failure:
-                    print("failure")
+                    print("Request login to OpenSubtitles is failed: \(response.debugDescription)")
             }
 
         }
@@ -96,7 +94,7 @@ class OpenSubtitlesAPI: DownloaderAPI {
             [query],
             ["limit": 10]
         ]
-        print(apiURL)
+
         AlamofireXMLRPC.request(apiURL, methodName: "SearchSubtitles", parameters: params).responseXMLRPC { (response: DataResponse<XMLRPCNode>) -> Void in
             switch response.result {
             case .success(let value):
@@ -104,7 +102,9 @@ class OpenSubtitlesAPI: DownloaderAPI {
                     return
                 }
                 let num = subtitleList.count
-                os_log("%d subtitles of %s found in Opensubtitles", type: .info, num, lang)
+                if (mg != nil) {
+                    os_log("%d subtitles of %s found in Opensubtitles", type: .info, num, lang)
+                }
 
                 var subinfoList = [Subinfo]()
                 for subtitle in subtitleList {
@@ -120,7 +120,7 @@ class OpenSubtitlesAPI: DownloaderAPI {
                 }
 
             case .failure:
-                print("failure")
+                print("Request SearchSubtitles to OpenSubtitles is failed: \(response.debugDescription)")
             }
         }
     }

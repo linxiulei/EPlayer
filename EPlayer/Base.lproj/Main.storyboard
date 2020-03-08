@@ -548,7 +548,7 @@
                                     <accessibilityTraits key="traits" button="YES"/>
                                 </accessibility>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="25.5" id="XL2-CJ-SJj"/>
+                                    <constraint firstAttribute="height" constant="25.5" id="XL2-CJ-SJj" userLabel="height = 20"/>
                                     <constraint firstAttribute="width" id="dxk-lw-QDT"/>
                                 </constraints>
                             </view>
@@ -585,17 +585,26 @@
                                     <action selector="clickFile:" destination="8nL-JV-DIM" eventType="touchUpInside" id="6em-rd-j2q"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d7Y-hm-2St" userLabel="Subtitle Btn">
+                                <rect key="frame" x="719" y="5" width="61" height="30"/>
+                                <state key="normal" title="Subtitles"/>
+                                <connections>
+                                    <action selector="clickSub:" destination="8nL-JV-DIM" eventType="touchUpInside" id="F7s-3w-YAx"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="VgA-Tq-hey" firstAttribute="centerX" secondItem="vXU-I4-uci" secondAttribute="centerX" id="1Tz-mP-0jN"/>
                             <constraint firstItem="kTj-ZG-nBw" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="4Xv-gx-n2l"/>
-                            <constraint firstItem="lV7-vS-YMy" firstAttribute="trailing" secondItem="kTj-ZG-nBw" secondAttribute="trailing" constant="30" id="6DZ-Uc-R25"/>
+                            <constraint firstItem="kTj-ZG-nBw" firstAttribute="trailing" secondItem="lV7-vS-YMy" secondAttribute="trailing" constant="-30" id="6DZ-Uc-R25"/>
+                            <constraint firstItem="d7Y-hm-2St" firstAttribute="trailing" secondItem="kDj-Sg-mOS" secondAttribute="leading" constant="-30" id="G0K-WW-X2h"/>
                             <constraint firstItem="VgA-Tq-hey" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="Nul-5V-Lsw"/>
                             <constraint firstItem="uWI-e3-KgF" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="TpS-y9-iqR"/>
-                            <constraint firstItem="kTj-ZG-nBw" firstAttribute="leading" secondItem="uWI-e3-KgF" secondAttribute="trailing" constant="20" id="aoN-23-dU0"/>
+                            <constraint firstItem="uWI-e3-KgF" firstAttribute="trailing" secondItem="kTj-ZG-nBw" secondAttribute="leading" constant="-20" id="aoN-23-dU0"/>
                             <constraint firstItem="mTF-mQ-dRy" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="e3W-Hf-GCB"/>
                             <constraint firstItem="kDj-Sg-mOS" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="fb4-zI-7GC"/>
+                            <constraint firstItem="d7Y-hm-2St" firstAttribute="centerY" secondItem="vXU-I4-uci" secondAttribute="centerY" id="g9f-B0-jUL"/>
                             <constraint firstItem="uWI-e3-KgF" firstAttribute="leading" secondItem="kDj-Sg-mOS" secondAttribute="trailing" constant="30" id="gle-iv-Oay"/>
                             <constraint firstItem="mTF-mQ-dRy" firstAttribute="leading" secondItem="lV7-vS-YMy" secondAttribute="leading" constant="10" id="xAE-5c-BhE"/>
                         </constraints>
@@ -605,6 +614,7 @@
                         <outlet property="checkAllBox" destination="mTF-mQ-dRy" id="l1Q-g6-RFZ"/>
                         <outlet property="checkAllBoxWidth" destination="dxk-lw-QDT" id="pRN-0j-1FQ"/>
                         <outlet property="fileBtn" destination="kTj-ZG-nBw" id="1db-2C-46I"/>
+                        <outlet property="subBtn" destination="d7Y-hm-2St" id="Z95-wp-o28"/>
                         <outlet property="wifiActiveLabel" destination="VgA-Tq-hey" id="WGF-7m-zzY"/>
                         <outlet property="wifiBtn" destination="kDj-Sg-mOS" id="U3y-C0-218"/>
                     </connections>
