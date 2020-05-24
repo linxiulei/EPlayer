@@ -404,8 +404,9 @@ class MovieGuesser {
             Love, Death & Robots - S01E01 - Sonnie's Edge
             CaptainMarvel.2019.1080p.WEB-DL.H264.AC3-EVO
             friends_s01e01_720p_bluray_264-fdaf.mkv
+            The Witcher 08 Mo.mkv
         */
-        let pattern = "([\\w. &,]+)[-_ ]*([sS]\\d+[eE]\\d+|\\d{4})[\\. -_]+.*"
+        let pattern = "([\\w. &,]+)[-_ ]*([sS]\\d+[eE]\\d+|\\d{2,4})[\\. -_]+.*"
 
         let regex = try! NSRegularExpression(pattern: pattern,
                                                  options: [])
