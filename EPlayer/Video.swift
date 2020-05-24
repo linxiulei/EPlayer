@@ -1033,6 +1033,9 @@ class Video {
 
             }
             let eventIndex = assTrack!.pointee.n_events - 1
+            if (eventIndex < 0) {
+                continue
+            }
             let event = assTrack!.pointee.events[Int(eventIndex)]
             if (event.Text == nil) {
                 continue
@@ -1489,11 +1492,28 @@ class Video {
                 continue
             }
             if (par.pointee.codec_type == AVMEDIA_TYPE_SUBTITLE) {
-                let subtitle_header_cast = unsafeBitCast(par.pointee.extradata,
-                                                         to: UnsafeMutablePointer<Int8>.self)
-                ass_process_data(assTrack,
-                                 subtitle_header_cast,
-                                 par.pointee.extradata_size)
+                if par.pointee.extradata_size > 0 {
+                    let subtitle_header_cast = unsafeBitCast(par.pointee.extradata,
+                                                             to: UnsafeMutablePointer<Int8>.self)
+                    ass_process_data(assTrack,
+                                     subtitle_header_cast,
+                                     par.pointee.extradata_size)
+
+                    let subtitle_header = String.init(cString: subtitle_header_cast)
+                
+                    if !subtitle_header.contains("\n[Events]") {
+                        let default_events_format = "[Events]\r\nFormat: %s, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\r\n"
+                        let count = default_events_format.utf8.count
+                        let result = UnsafeMutablePointer<Int8>.allocate(capacity: count)
+                        default_events_format.withCString { (baseAddress) in
+                            result.initialize(from: baseAddress, count: count)
+                        }
+                    ass_process_data(assTrack,
+                                     result,
+                                     Int32(count))
+
+                    }
+                }
                 let sSt = pFormatCtx?.pointee.streams[Int(i)]
                 sCodecCtx?.pointee.pkt_timebase = sSt!.pointee.time_base
                 var lang = getAVOpt(sSt!, "language")
