@@ -398,15 +398,18 @@ class MovieGuesser {
 
     init(_ filename: String) {
         /*
-         A few filename examples:
+         A few filename examples: Tested here https://regex101.com/r/KAw2S2/1
 
             Silicon.Valley.S01E01.720p.BluRay.x265.ShAaNiG
             Love, Death & Robots - S01E01 - Sonnie's Edge
             CaptainMarvel.2019.1080p.WEB-DL.H264.AC3-EVO
             friends_s01e01_720p_bluray_264-fdaf.mkv
             The Witcher 08 Mo.mkv
+            Spartacus (2010) - S01E04 - The Thing in the Pit (1080p BluRay x265 Silence).mkv
+            101 - Death Has A Shadow
+            Fresh Off The Boat 02x03 Shaquille Oneal Motors
         */
-        let pattern = "([\\w. &,]+)[-_ ]*([sS]\\d+[eE]\\d+|\\d{2,4})[\\. -_]+.*"
+        let pattern = "([\\w. &,]+)( \\(\\d+\\) )?[-_ \\.]+([sS]?\\d+[x]?[eE]?\\d+|\\d{2,4})[\\. -_]+.*"
 
         let regex = try! NSRegularExpression(pattern: pattern,
                                                  options: [])
@@ -414,7 +417,7 @@ class MovieGuesser {
         if (matches.count > 0) {
             let m = matches[0]
             movieName = (filename as NSString).substring(with: m.range(at: 1)).trimmingCharacters(in: .whitespacesAndNewlines).trimmingCharacters(in: .punctuationCharacters)
-            let part2 = (filename as NSString).substring(with: m.range(at: 2)).lowercased()
+            let part2 = (filename as NSString).substring(with: m.range(at: 3)).lowercased()
             if part2.starts(with: "s") {
                 let s = part2[
                     part2.index(part2.startIndex, offsetBy: 1)..<part2.index(of: "e")!]
@@ -423,8 +426,26 @@ class MovieGuesser {
                 season = Int32(s)
                 episode = Int32(e)
             }
+            
+            if part2.contains("x") {
+                let s = part2[
+                    part2.index(part2.startIndex, offsetBy: 0)..<part2.index(of: "x")!]
+                let e = part2[
+                    part2.index(part2.index(of: "x")!, offsetBy: 1)..<part2.endIndex]
+                season = Int32(s)
+                episode = Int32(e)
+            }
         } else {
-            movieName = ""
+            let pattern = "(\\d+)[- ]+([\\w. &,]+)"
+            let regex = try! NSRegularExpression(pattern: pattern,
+                                                     options: [])
+            let matches = regex.matches(in: filename, options: [], range: NSMakeRange(0, filename.count))
+            if (matches.count > 0) {
+                let m = matches[0]
+                movieName = (filename as NSString).substring(with: m.range(at: 2)).trimmingCharacters(in: .whitespacesAndNewlines).trimmingCharacters(in: .punctuationCharacters)
+            } else {
+                movieName = ""
+            }
         }
     }
 }
