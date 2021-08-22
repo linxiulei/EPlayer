@@ -24,7 +24,7 @@ let CVPIX_FMT = kCVPixelFormatType_32BGRA
 let AUDIO_FMT_CONVERT_TO = AV_SAMPLE_FMT_S16
 
 let ALIGN = Int32(64)
-let CODEC_HWAccel = [AV_CODEC_ID_H263, AV_CODEC_ID_H264]
+let CODEC_HWAccel = [AV_CODEC_ID_H263, AV_CODEC_ID_H264, AV_CODEC_ID_HEVC]
 //let FMT_CONVERT_TO = AV_PIX_FMT_UYVY422
 
 //let FMT_CONVERT_TO = AV_PIX_FMT_YUV420P
@@ -515,7 +515,7 @@ class Video {
             var packet = av_packet_alloc()
             let ret = av_read_frame(pFormatCtx, packet)
             if (ret == AVERROR_EOF) {
-                if (!videoIsEOF) {
+                if (!videoIsEOF && isMovieAlmostFinished()) {
                     videoIsEOF = true
                     stop()
                     _ = audioQueue.enqueue(&EOFPacket)
@@ -618,12 +618,6 @@ class Video {
             layer.flushAndRemoveImage()
             ret = AudioQueueStop(_audioQueue!, true)
             _ = isErr(ret, "AudioQueueStop")
-
-            while (decodeThreadIsStopped == false) {
-                print("test123 \(decodeThreadIsStopped)")
-                // 100ms
-                usleep(100000)
-            }
         }
     }
 
@@ -1190,7 +1184,7 @@ class Video {
             avcodec_flush_buffers(aCodecCtx)
             return nil
         } else if (packet == &EOFPacket) {
-            stop()
+            decodeThreadIsStopped = true
             return nil
         }
 
@@ -1243,6 +1237,10 @@ class Video {
 
     func getMoviePositionInPercent() -> Int {
         return Int(getMasterClock() * Int64(100) / getMovieDuration())
+    }
+    
+    func isMovieAlmostFinished() -> Bool {
+        return (Float(getMasterClock() * Int64(100)) / Float(getMovieDuration())) >= 99.95
     }
 
     func createAudioQueue() -> AudioQueueRef? {
