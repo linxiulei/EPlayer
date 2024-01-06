@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8AABA71422FF6406007D31E8 /* names.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8AABA71322FF6406007D31E8 /* names.txt */; };
+		8AB9CFBA2B498A6F001EB78F /* config.json in Resources */ = {isa = PBXBuildFile; fileRef = 8AB9CFB92B498A6F001EB78F /* config.json */; };
 		B3E2A6CA552C2F35FE152D2D /* Pods_EPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BD6E595FAC6F4E7A0DE8088 /* Pods_EPlayer.framework */; };
 		D904B8B0207B6A7600AD9CD1 /* MoviePanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D904B8AF207B6A7600AD9CD1 /* MoviePanelController.swift */; };
 		D904B8B5207C966D00AD9CD1 /* libuchardet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D904B8B4207C966D00AD9CD1 /* libuchardet.a */; };
@@ -76,6 +77,7 @@
 		47C06CBCF6D04E332A6B0CC5 /* Pods-EPlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EPlayer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EPlayer/Pods-EPlayer.debug.xcconfig"; sourceTree = "<group>"; };
 		83D4AF9D3C7086CF50D6DA16 /* Pods-EPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-EPlayer/Pods-EPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		8AABA71322FF6406007D31E8 /* names.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = names.txt; sourceTree = "<group>"; };
+		8AB9CFB92B498A6F001EB78F /* config.json */ = {isa = PBXFileReference; lastKnownFileType = text; path = config.json; sourceTree = "<group>"; };
 		D904B8AF207B6A7600AD9CD1 /* MoviePanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviePanelController.swift; sourceTree = "<group>"; };
 		D904B8B3207C966D00AD9CD1 /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
 		D904B8B4207C966D00AD9CD1 /* libuchardet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libuchardet.a; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 				D904B8B1207C966D00AD9CD1 /* libuchardet */,
 				D915D212205BC016000BE745 /* ffmpeg */,
 				D9D1BC0B206372E4001EBC76 /* libass */,
+				8AB9CFB92B498A6F001EB78F /* config.json */,
 			);
 			path = EPlayer;
 			sourceTree = "<group>";
@@ -950,6 +953,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8AB9CFBA2B498A6F001EB78F /* config.json in Resources */,
 				D915D11F205BBBFF000BE745 /* LaunchScreen.storyboard in Resources */,
 				D915D11C205BBBFF000BE745 /* Assets.xcassets in Resources */,
 				D90A54A62070E03500C275E0 /* dictfile.csv in Resources */,

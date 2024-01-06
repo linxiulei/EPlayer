@@ -54,19 +54,39 @@ class OpenSubtitlesAPI: DownloaderAPI {
     var apiURL = "https://api.opensubtitles.org/xml-rpc"
 
     func logIn(_ mg: MovieGuesser, _ hash: OpenSubtitlesHash.VideoHash, _ lang: String, closure: @escaping (_ subinfo: Subinfo) -> Void) {
-        let params: [Any] = ["", "", "en", "TemporaryUserAgent"]
+        var params: [Any] = ["", "", "en", "TemporaryUserAgent"]
+        let filepath = "config"
+        let type = "json"
+        guard let path = Bundle.main.path(forResource: filepath, ofType: type) else {
+            print("no such file \(filepath).\(type)")
+            return
+        }
+
+        do {
+            // json config example: {"OpenSubtitles": {"params": ["$ACCOUNT_NAME", "$PASSWORD", "$LANG", "$USER_AGENT"]}}
+            // {"OpenSubtitles": {"params": ["$ACCOUNT_NAME", "$PASSWORD", "$LANG", "$USER_AGENT"]}}
+            let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+            let json = try JSONSerialization.jsonObject(with: data, options: [])
+
+            if let json = json as? Dictionary<String, AnyObject>, let config = json["OpenSubtitles"] as? Dictionary<String, AnyObject> {
+                params = config["params"] as! [Any]
+            }
+        } catch {
+            print("OpenSubtitles: no config provided or failed to parse \(error)")
+            return
+        }
         AlamofireXMLRPC.request(apiURL, methodName: "LogIn", parameters: params).responseXMLRPC { (response: DataResponse<XMLRPCNode>) -> Void in
             switch response.result {
-                case .success(let value):
-                    let token = value[0]["token"].string
-                    if (token == nil) {
-                        print("OpenSubtitle LogIn API failed")
-                        return
-                    }
-                    self.searchSubtitles(nil, hash, token!, lang, closure: closure)
-                    self.searchSubtitles(mg, nil, token!, lang, closure: closure)
-                case .failure:
-                    print("Request login to OpenSubtitles is failed: \(response.debugDescription)")
+            case .success(let value):
+                let token = value[0]["token"].string
+                if (token == nil) {
+                    print("OpenSubtitle LogIn API failed")
+                    return
+                }
+                self.searchSubtitles(nil, hash, token!, lang, closure: closure)
+                self.searchSubtitles(mg, nil, token!, lang, closure: closure)
+            case .failure:
+                print("Request login to OpenSubtitles is failed: \(response.debugDescription)")
             }
 
         }
