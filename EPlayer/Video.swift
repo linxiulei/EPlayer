@@ -118,7 +118,7 @@ class Video {
     var height: Int32!
 
     var audioQueue = AVPacketQueue<AVPacket>(0)
-    var videoQueue = AVPacketQueue<AVFrame>(0)
+    var videoQueue = AVPacketQueue<AVPacket>(0)
     var subtitleQueue = AVPacketQueue<AVPacket>(0)
     var swrCtx:  OpaquePointer?
     var swrCtxComp:  OpaquePointer!
@@ -466,11 +466,11 @@ class Video {
                 if (ret < 0) {
                     os_log("seeking is failed %d", type: .error, ret)
                 }
-                os_log("seekingto pts: %d TsInMSec: %d", type: .info, pts, seekTsInMSec)
+                os_log("seeking to pts: %d TsInMSec: %d", type: .info, pts, seekTsInMSec)
                 seekReq = false
                 videoIsEOF = false
                 videoQueue.flush()
-                avcodec_flush_buffers(pCodecCtx)
+                _ = videoQueue.enqueue(&flushPacket)
                 layer.flush()
                 audioQueue.flush()
                 _ = audioQueue.enqueue(&flushPacket)
@@ -483,6 +483,7 @@ class Video {
                 if (subtitleName != nil) {
                     subtitleManager.flush(subtitleName!)
                 }
+                CMTimebaseSetTime(layer.controlTimebase!, CMTimeMake(pts, 1000))
             }
 
             if (videoQueue.count > 100 || audioQueue.count > 100) {
@@ -532,14 +533,7 @@ class Video {
             //print("queue size \(videoQueue.count) \(audioQueue.count) \(subtitleQueue.count)")
 
             if (packet?.pointee.stream_index == videoStream) {
-                guard let f = decodeVideoFrame(packet) else {
-                    av_packet_unref(packet!)
-                    av_packet_free(&packet)
-                    continue
-                }
-                _ = videoQueue.enqueue(f)
-                av_packet_unref(packet!)
-                av_packet_free(&packet)
+                _ = videoQueue.enqueue(packet!)
             } else if (packet?.pointee.stream_index == audioStream) {
                 _ = audioQueue.enqueue(packet!)
             } else if (packet?.pointee.stream_index == subtitleStream) {
@@ -629,11 +623,6 @@ class Video {
         -> UnsafeMutablePointer<AVFrame>? {
         var ret: Int32
 
-        if (packet == nil) {
-            os_log("no frame avaiable", type: .debug)
-            return nil
-        }
-
         repeat {
             ret = avcodec_send_packet(pCodecCtx, packet)
             if (ret == -EAGAIN) {
@@ -651,7 +640,7 @@ class Video {
         if (ret == -EAGAIN) {
             print(EAGAIN)
         }
-        if isErr(ret, "avcodec_receive_frame") {
+        if isErr(ret, "avcodec_receive_frame video") {
             return nil
         }
 
@@ -666,8 +655,23 @@ class Video {
     }
 
     func getNextFrame() -> UnsafeMutablePointer<AVFrame>? {
-        let frame = videoQueue.dequeue()
-        return frame
+        var packet = videoQueue.dequeue()
+        if (packet == nil) {
+            os_log("no frame avaiable", type: .debug)
+            return nil
+        }
+        if (packet == &flushPacket) {
+            avcodec_flush_buffers(pCodecCtx)
+            return nil
+        }
+        guard let f = decodeVideoFrame(packet) else {
+            av_packet_unref(packet!)
+            av_packet_free(&packet)
+            return nil
+        }
+        av_packet_unref(packet!)
+        av_packet_free(&packet)
+        return f
     }
 
     func displayViews2() {
@@ -1206,7 +1210,7 @@ class Video {
         if (ret == -EAGAIN) {
             print(EAGAIN)
         }
-        if isErr(ret, "avcodec_receive_frame") {
+        if isErr(ret, "avcodec_receive_frame audio") {
             return nil
         }
         let dataSize = av_samples_get_buffer_size(nil,

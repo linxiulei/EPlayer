@@ -1229,7 +1229,7 @@
 			baseConfigurationReference = 47C06CBCF6D04E332A6B0CC5 /* Pods-EPlayer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MJ3KM6HE6G;
 				ENABLE_BITCODE = NO;
@@ -1255,6 +1255,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Lin.EPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "EPlayer/EPlayer-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1267,7 +1268,7 @@
 			baseConfigurationReference = 83D4AF9D3C7086CF50D6DA16 /* Pods-EPlayer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MJ3KM6HE6G;
 				ENABLE_BITCODE = NO;
@@ -1292,6 +1293,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Lin.EPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "EPlayer/EPlayer-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
