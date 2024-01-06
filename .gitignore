@@ -66,5 +66,7 @@ iOSInjectionProject/
 
 EPlayer.xcodeproj/xcuserdata
 EPlayer.xcodeproj/project.xcworkspace/xcuserdata
+EPlayer.xcodeproj/xcshareddata/
 EPlayer.xcworkspace/xcuserdata
 Pods/Pods.xcodeproj/xcuserdata
+EPlayer/config.json
